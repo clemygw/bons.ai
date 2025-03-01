@@ -13,6 +13,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     onSubmit({ username, password, company, rememberMe })
+    router.push("/dashboard")
   }
 
   return (

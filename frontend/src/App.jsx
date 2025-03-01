@@ -21,21 +21,20 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Leaderboard />} />   /*see where goes*/
+      <Route path="/login" element={<Login />} />   /*see where goes*/
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
+
         }
       />
       <Route
         path="/leaderboard"
         element={
-          <ProtectedRoute>
+          
             <Leaderboard />
-          </ProtectedRoute>
+          
         }
       />
       <Route path="/" element={<Navigate to="/login" />} />

@@ -7,7 +7,7 @@ const DevSidebar = () => {
       <div className="flex flex-col h-full">
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-teal-600">Development Menu</h2>
-          <p className="text-xs text-gray-500">This sidebar will be removed in production</p>
+          <p className="text-xs text-gray-500">Whats up gang</p>
         </div>
 
         <nav className="space-y-2 flex-1">
@@ -47,6 +47,10 @@ const DevSidebar = () => {
         <button
           onClick={() => {
             /* Add logout logic */
+            //router.push("/dashboard")
+            
+            
+
           }}
           className="flex items-center gap-3 px-3 py-2 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
         >
