@@ -24,7 +24,7 @@ const mockTransactions = [
     category: "transportation",
     merchant: "Uber",
     date: "2024-02-19",
-    co2Emissions: 31,
+    co2Emissions: 35,
     items: [
       { name: "Ride to work", price: 25.0, quantity: 1 },
     ],
@@ -93,12 +93,17 @@ const Dashboard = () => {
       total += transaction.co2Emissions
     })
     
-    return {
-      categoryEmissions: Object.entries(categories).map(([name, emissions]) => ({
+    // Create array of category data and sort by emissions (highest first)
+    const sortedCategoryEmissions = Object.entries(categories)
+      .map(([name, emissions]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
         emissions,
         percentage: total > 0 ? Math.round((emissions / total) * 100) : 0
-      })),
+      }))
+      .sort((a, b) => b.emissions - a.emissions)
+    
+    return {
+      categoryEmissions: sortedCategoryEmissions,
       totalEmissions: total
     }
   }, [])
@@ -151,7 +156,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                {/* Category Emissions */}
+                {/* Category Emissions - Sorted by size */}
                 <div className="space-y-6">
                   {categoryEmissions.map((category) => (
                     <div key={category.name} className="space-y-2">
