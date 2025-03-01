@@ -4,11 +4,9 @@ import { useState } from "react"
 import { EyeIcon, EyeOffIcon } from "./Icons"
 import axios from "axios"
 
-const API_URL = 'http://localhost:5001/api';
-
 async function getTransactions(accountId) {
   try{
-    const response = await axios.get(`${API_URL}/nessie/transactions/${accountId}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/nessie/transactions/${accountId}`);
     return response.data;
   }
   catch (error) {
