@@ -1,7 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import nessieRoutes from './routes/nessie.routes.js';
+
+dotenv.config();
 
 const app = express();
 
@@ -22,6 +25,7 @@ app.get('/', (req, res) => {
 
 // Routes will go here
 // app.use('/api/your-route', yourRouteHandler);
+app.use('/api/nessie', nessieRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -30,7 +34,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 }); 
