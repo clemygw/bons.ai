@@ -1,6 +1,6 @@
-import axios from 'axios';
-import asyncHandler from 'express-async-handler';
-import dotenv from 'dotenv';
+const axios = require('axios');
+const asyncHandler = require('express-async-handler');
+const dotenv = require('dotenv');
 dotenv.config();
 
 const NESSIE_API_KEY = process.env.NESSIE_API_KEY;
@@ -10,7 +10,7 @@ const ID = '56c66be6a73e492741507b34';
 // @desc    Get filtered transactions
 // @route   GET /api/nessie/transactions
 // @access  Public
-export const getTransactions = asyncHandler(async (req, res) => {
+const getTransactions = asyncHandler(async (req, res) => {
   try {
     const { accountId } = req.params;
     const response = await axios.get(`${BASE_URL}/enterprise/transfers?key=${NESSIE_API_KEY}`);
@@ -22,7 +22,6 @@ export const getTransactions = asyncHandler(async (req, res) => {
       const filtered = response.data.results.filter(transaction => {
         console.log('Checking transaction:', transaction); // Debug each transaction
         //console.log(transaction[0])
-        console.log(transactions.length)
         console.log('Comparing payer_id:', transaction.payer_id, 'with accountId:', accountId);
         return transaction.payer_id === accountId;
       });
@@ -46,7 +45,7 @@ function filterTransactions(transactions,payer_id) {
 // @desc    Get all accounts
 // @route   GET /api/nessie/accounts
 // @access  Public
-export const getAccounts = asyncHandler(async (req, res) => {
+const getAccounts = asyncHandler(async (req, res) => {
     try {
       console.log('NESSIE_API_KEY:', `${NESSIE_API_KEY}`);
       const response = await axios.get(`${BASE_URL}/enterprise/accounts?key=${NESSIE_API_KEY}`);
@@ -62,3 +61,8 @@ export const getAccounts = asyncHandler(async (req, res) => {
       res.status(500).json({ message: 'Error fetching accounts' });
     }
   });
+
+module.exports = {
+    getTransactions,
+    getAccounts
+};
