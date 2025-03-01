@@ -14,9 +14,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       if (user?.company) {
-        console.log('Fetching company details for ID:', user.company);
+        console.log('Fetching company details for ID:', user.company._id);
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies/${user.company}`);
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies/${user.company._id}`);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -35,19 +35,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5001/api/transactions/user/67c2c6f00ed06018206e0c9c`);
-        console.log('Fetched transactions:', response.data);
-        setTransactions(response.data);
-      } catch (error) {
-        console.error('Error fetching transactions:', error);
-        setTransactions([]); // Set empty array if error
+      if (user?.transactions) {
+        console.log('Fetching transactions for user:', user.transactions);
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions/user/${user.id}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('Transactions data received:', data);
+          setTransactions(data);
+        } catch (error) {
+          console.error('Error fetching transactions:', error);
+          setTransactions([]);
+        }
       }
     };
+
     fetchTransactions();
-    // if (user?._id) {
-    //   fetchTransactions();
-    // }
   }, [user]);
 
   const { categoryEmissions, totalEmissions } = useMemo(() => {
