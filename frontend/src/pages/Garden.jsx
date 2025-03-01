@@ -69,10 +69,11 @@ const Garden = () => {
 
         {/* Bonsai Tree */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 transition-all duration-1000"
           style={{
             width: `${treeSize}px`,
             height: `${treeSize}px`,
+            transform: 'translate(-50%, -900px)',
           }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
