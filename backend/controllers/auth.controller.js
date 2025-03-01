@@ -6,7 +6,9 @@ const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.body.email })
+    .populate('transactions')
+    .populate('company');
     if (!user) return res.status(400).json({ error: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -26,6 +28,7 @@ const signin = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         company: user.company,
+        transactions : user.transactions,
       },
     });
   } catch (error) {

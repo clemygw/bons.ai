@@ -73,19 +73,18 @@ const transactionController = {
   // Delete a transaction
   deleteTransaction: async (req, res) => {
     try {
-      const transaction = await Transaction.findById(req.params.transactionId);
-      if (!transaction) {
-        return res.status(404).json({ message: 'Transaction not found' });
-      }
-
-      // Remove transaction ID from user's transactions array
-      await User.findByIdAndUpdate(
-        transaction.user,
-        { $pull: { transactions: transaction._id } }
-      );
-
       await Transaction.findByIdAndDelete(req.params.transactionId);
       res.status(200).json({ message: 'Transaction deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  deleteMultipleTransactions: async (req, res) => {
+    try {
+      const { transactionIds } = req.body;
+      await Transaction.deleteMany({ _id: { $in: transactionIds } });
+      res.status(200).json({ message: 'Transactions deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
