@@ -68,6 +68,7 @@ const Dashboard = () => {
     
     transactions.forEach(transaction => {
       const category = transaction.category.toLowerCase()
+      console.log("here")
       if (categories.hasOwnProperty(category)) {
         categories[category] += transaction.co2Emissions
       } else {
