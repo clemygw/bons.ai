@@ -1,0 +1,72 @@
+"use client"
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import LoginForm from "../components/LoginForm"
+import BonsaiLogo from "../assets/bonsai-logo"
+
+const Login = () => {
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleLogin = async (credentials) => {
+    try {
+      setIsLoading(true)
+      setError("")
+
+      // This would typically call your authentication service
+      // Example: await authService.login(credentials);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // If login is successful, redirect to dashboard
+      navigate("/dashboard")
+    } catch (err) {
+      setError("Invalid username or password. Please try again.")
+      console.error("Login error:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-8">
+            <div className="flex justify-center mb-8">
+              <div className="h-12">
+                <BonsaiLogo />
+              </div>
+            </div>
+
+            <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">Welcome to bons.ai</h1>
+            <p className="text-center text-gray-600 mb-8">Sign in to your account to continue</p>
+
+            {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
+
+            <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{" "}
+                <a href="/signup" className="text-teal-600 hover:text-teal-800 font-medium">
+                  Sign up
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-teal-600 p-4">
+            <p className="text-center text-white text-xs">© {new Date().getFullYear()} bons.ai. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Login
+
