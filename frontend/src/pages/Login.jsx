@@ -17,19 +17,23 @@ const Login = () => {
   const handleLogin = async (credentials) => {
     setIsLoading(true)
     try {
+      setIsLoading(true)
+      setError("")
+
+      // Call the auth service
       const response = await authService.signin(credentials)
+
+      // Update global auth context
       setUser(response.user)
-      
-      // Return the login response first
+
+      // Navigate to dashboard
       setTimeout(() => {
-        navigate("/dashboard")
+        navigate("/garden")
       }, 100)
-      
       return response
-    } catch (error) {
-      console.error("Login failed:", error)
-      // Handle login error (show message, etc.)
-      return null
+    } catch (err) {
+      setError(err.message || "Invalid email or password. Please try again.")
+      console.error("Login error:", err)
     } finally {
       setIsLoading(false)
     }
@@ -38,9 +42,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ padding: '40px 20px' }}>
-          <div className="flex justify-center mb-8" style={{ marginTop: '-150px' }}>
-            <div className="h-12">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ padding: "40px 20px" }}>
+          <div className="flex justify-center mb-8">
+            <div className="w-32 h-32 bg-teal-50 rounded-lg p-4 flex items-center justify-center">
               <BonsaiLogo />
             </div>
           </div>
