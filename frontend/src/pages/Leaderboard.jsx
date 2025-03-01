@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import DevSidebar from "../Components/DevSidebar"
+import DevSidebar from "../components/DevSidebar"
 
 // Mock data for development
 const mockEmissionsData = [
@@ -114,7 +114,7 @@ const Leaderboard = () => {
                     `}
                     >
                       {user.rank}
-                    </span>
+                    </span> 
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium">{user.name}</h3>
