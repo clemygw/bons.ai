@@ -51,6 +51,66 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// When a new user is created or updated
+userSchema.post('save', async function(doc) {
+  if (doc.company) {
+    await mongoose.model('Company').findByIdAndUpdate(
+      doc.company,
+      { $addToSet: { users: doc._id } }, // $addToSet prevents duplicates
+      { new: true }
+    );
+  }
+});
+
+// Before a user is deleted
+userSchema.pre('findOneAndDelete', async function() {
+  const user = await this.model.findOne(this.getQuery());
+  if (user && user.company) {
+    await mongoose.model('Company').findByIdAndUpdate(
+      user.company,
+      { $pull: { users: user._id } }
+    );
+  }
+});
+
+// Handle bulk deletions
+userSchema.pre('deleteMany', async function() {
+  const users = await this.model.find(this.getQuery());
+  const updates = users.map(user => {
+    if (user.company) {
+      return mongoose.model('Company').findByIdAndUpdate(
+        user.company,
+        { $pull: { users: user._id } }
+      );
+    }
+  });
+  await Promise.all(updates.filter(Boolean));
+});
+
+// When a user's company is updated
+userSchema.pre('findOneAndUpdate', async function() {
+  const update = this.getUpdate();
+  const user = await this.model.findOne(this.getQuery());
+
+  // If company is being changed
+  if (update.$set?.company !== undefined && user) {
+    // Remove user from old company
+    if (user.company) {
+      await mongoose.model('Company').findByIdAndUpdate(
+        user.company,
+        { $pull: { users: user._id } }
+      );
+    }
+    
+    // Add user to new company
+    if (update.$set.company) {
+      await mongoose.model('Company').findByIdAndUpdate(
+        update.$set.company,
+        { $addToSet: { users: user._id } }
+      );
+    }
+  }
+});
 
 const User = mongoose.model('User', userSchema);
 

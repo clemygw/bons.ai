@@ -20,9 +20,9 @@ const companySchema = new Schema({
     type: Number,
     default: 0 // Sum of all users' emissions
   },
-  leaderboard: [{
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
-    emissionsReduced: { type: Number, default: 0 }
+  users: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   }]
 }, { timestamps: true });
 

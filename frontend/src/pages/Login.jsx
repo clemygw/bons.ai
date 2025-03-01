@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { useCompany } from '../context/CompanyContext'
 import LoginForm from "../components/LoginForm"
 import BonsaiLogo from "../assets/bonsai-logo"
 import authService from "../services/authService"
@@ -10,6 +11,7 @@ import authService from "../services/authService"
 const Login = () => {
   const navigate = useNavigate()
   const { setUser } = useAuth()
+  const { updateCompany } = useCompany()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [companyName, setCompanyName] = useState("")
@@ -20,20 +22,40 @@ const Login = () => {
       setIsLoading(true)
       setError("")
 
-      // Call the auth service
-      const response = await authService.signin(credentials)
+      // Login user
+      const loginResponse = await authService.signin(credentials)
+      console.log('Fetching user by login response:', loginResponse.user);
+      
+      setUser(loginResponse.user)
 
-      // Update global auth context
-      setUser(response.user)
+      // If user has a company, fetch and store company data
+      if (loginResponse.user.company) {
+        console.log('Fetching company data from user...');
+        
+        const companyResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/companies/${loginResponse.user.company._id}`
+        )
+        const companyData = await companyResponse.json()
+        
+        console.log('Company Data Received:', companyData);
+        
+        updateCompany(companyData)
+      } else {
+        console.log('No company associated with user');
+      }
 
       // Navigate to dashboard
       setTimeout(() => {
         navigate("/garden")
       }, 100)
-      return response
+      return loginResponse
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.")
-      console.error("Login error:", err)
+      console.error('Login error:', {
+        error: err,
+        message: err.message,
+        stack: err.stack
+      })
     } finally {
       setIsLoading(false)
     }
