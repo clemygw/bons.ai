@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
 import { useAuth } from "../context/AuthContext"
