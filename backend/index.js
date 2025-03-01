@@ -12,6 +12,7 @@ const userRoutes = require('./routes/User.route');
 const transactionRoutes = require('./routes/transaction.route');
 const companyRoutes = require('./routes/company.route');
 const nessieRoutes = require('./routes/nessie.routes');
+const receiptRoutes = require('./routes/receipt.routes');
 const authRoutes = require('./routes/auth.routes');
 const app = express();
 
@@ -37,6 +38,7 @@ app.use('/api/nessie', nessieRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/companies', companyRoutes);
+app.use('/api/receipts', receiptRoutes);
 app.use('/api/auth', authRoutes);
 
 
