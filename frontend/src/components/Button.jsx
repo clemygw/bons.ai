@@ -1,7 +1,7 @@
-const Button = ({ variant = "primary", children, ...props }) => {
-  const className = variant === "primary" ? "btn-primary" : "btn-secondary"
+const Button = ({ variant = "primary", children, className = "", ...props }) => {
+  const baseClass = variant === "primary" ? "btn-primary" : "btn-secondary"
   return (
-    <button className={className} {...props}>
+    <button className={`${baseClass} ${className}`} {...props}>
       {children}
     </button>
   )

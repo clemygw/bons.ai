@@ -8,15 +8,22 @@ import { useUser } from "../context/UserContext"
 const DevSidebar = () => {
   const { logout } = useUser()
   const navigate = useNavigate()
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed')
+    return saved ? JSON.parse(saved) : true
+  })
   const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
     let timeout
     if (isHovering) {
       setIsCollapsed(false)
+      localStorage.setItem('sidebarCollapsed', 'false')
     } else {
-      timeout = setTimeout(() => setIsCollapsed(true), 300)
+      timeout = setTimeout(() => {
+        setIsCollapsed(true)
+        localStorage.setItem('sidebarCollapsed', 'true')
+      }, 300)
     }
     return () => clearTimeout(timeout)
   }, [isHovering])
