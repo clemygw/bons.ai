@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -43,8 +44,13 @@ const userSchema = new Schema({
   timestamps: true // Adds createdAt and updatedAt timestamps
 });
 
-// Create a compound index for efficient querying
-userSchema.index({ email: 1, user_id: 1 });
+// Hash password before saving user
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
 
 const User = mongoose.model('User', userSchema);
 

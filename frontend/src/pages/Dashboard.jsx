@@ -1,8 +1,10 @@
-"use client"
 
-import { useState, useMemo } from "react"
+"use client"
+import { useState, useEffect, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
+import { useAuth } from "../context/AuthContext"
+
 
 // Mock data for transactions
 const mockTransactions = [
@@ -68,6 +70,30 @@ const mockTransactions = [
 
 const Dashboard = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [companyName, setCompanyName] = useState('')
+  const { user } = useAuth()
+
+  useEffect(() => {
+    const fetchCompanyDetails = async () => {
+      if (user?.company) {
+        console.log('Fetching company details for ID:', user.company);
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies/${user.company}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('Company data received:', data);
+          setCompanyName(data.name);
+        } catch (error) {
+          console.error('Error fetching company details:', error);
+          setCompanyName('Unknown Company');
+        }
+      }
+    };
+
+    fetchCompanyDetails();
+  }, [user]);
 
   // Calculate emissions by category and total emissions
   const { categoryEmissions, totalEmissions } = useMemo(() => {
@@ -123,7 +149,7 @@ const Dashboard = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <h1 className="text-2xl font-bold text-teal-600">bons.ai</h1>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">Acme Corp</span>
+              <span className="text-sm text-gray-600">{companyName || 'Loading...'}</span>
               <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
                 <Bell size={20} />
               </button>
