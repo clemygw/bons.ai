@@ -3,6 +3,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const userRoutes = require('./routes/User.route');
+const transactionRoutes = require('./routes/transaction.route');
+const companyRoutes = require('./routes/company.route');
 const app = express();
 
 // Middleware
@@ -23,6 +25,8 @@ app.get('/', (req, res) => {
 // Routes will go here
 // app.use('/api/your-route', yourRouteHandler);
 app.use('/api/user', userRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/companies', companyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -25,15 +25,19 @@ const userSchema = new Schema({
     required: [true, 'Password is required'],
     minLength: [6, 'Password must be at least 6 characters long']
   },
-  user_id: {
-    type: String,
-    required: true,
-    unique: true
+  company: {
+    type: Schema.Types.ObjectId,
+    ref: 'Company',
+    required: true
   },
-  company_id: {
-    type: String,
-    required: false,
-    trim: true
+  transactions: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Transaction',
+    required: false
+  },
+  totalEmissions: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt timestamps
