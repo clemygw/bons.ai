@@ -1,12 +1,15 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
-import { User, Bell } from "lucide-react"
+import { User, Bell, Camera } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
 import TopBar from "../components/TopBar"
 import { useAuth } from "../context/AuthContext"
 import { useCompany } from "../context/CompanyContext"
 import axios from 'axios'
 import Layout from "../components/Layout"
+import Card from "../components/Card"
+import Button from "../components/Button"
+import Modal from "../components/Modal"
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([])
@@ -77,13 +80,17 @@ const Dashboard = () => {
     setSelectedTransaction(transaction)
   }
 
+  const handleCloseModal = () => {
+    setSelectedTransaction(null)
+  }
+
   return (
     <Layout>
       <div className="grid grid-cols-3 gap-8">
         {/* Main Box (2/3) */}
         <div className="col-span-2">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-6">Carbon Emissions by Category</h2>
+          <Card>
+            <h2 className="card-title">Carbon Emissions by Category</h2>
             
             {/* Total Emissions Bar */}
             <div className="mb-8 space-y-2">
@@ -116,79 +123,76 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Transactions List (1/3) */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6">Recent Transactions</h2>
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <button
-                key={transaction._id}
-                onClick={() => handleTransactionClick(transaction._id)}
-                className="w-full text-left p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium">{transaction.merchant}</h3>
-                    <p className="text-sm text-gray-600">{transaction.category}</p>
+        <div className="col-span-1">
+          <Card>
+            <h2 className="card-title">Recent Transactions</h2>
+            <div className="space-y-4">
+              {transactions.map((transaction) => (
+                <div
+                  key={transaction._id}
+                  onClick={() => handleTransactionClick(transaction._id)}
+                  className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-teal-100 rounded-full">
+                      <Camera size={20} className="text-teal-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">{transaction.merchant}</p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(transaction.date).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">${transaction.amount}</p>
-                    <p className="text-sm text-gray-600">{transaction.co2Emissions} kg CO₂</p>
-                  </div>
+                  <p className="font-medium">${transaction.amount.toFixed(2)}</p>
                 </div>
-              </button>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
 
       {/* Transaction Details Modal */}
-      {selectedTransaction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Transaction Details</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Merchant</p>
-                <p className="font-medium">{selectedTransaction.merchant}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Amount</p>
-                <p className="font-medium">${selectedTransaction.amount}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Category</p>
-                <p className="font-medium">{selectedTransaction.category}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Carbon Emissions</p>
-                <p className="font-medium">{selectedTransaction.co2Emissions} kg CO₂</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Date</p>
-                <p className="font-medium">{new Date(selectedTransaction.date).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Items</p>
-                {selectedTransaction.items.map(item => (
-                  <div key={item.name}>
-                    <p className="font-medium">{item.name} - ${item.price} x {item.quantity}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={() => setSelectedTransaction(null)}
-              className="mt-6 w-full py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Close
-            </button>
+      <Modal isOpen={!!selectedTransaction} onClose={handleCloseModal}>
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold mb-4">Transaction Details</h2>
+          
+          <div>
+            <p className="text-sm text-gray-600">Merchant</p>
+            <p className="font-medium">{selectedTransaction?.merchant}</p>
           </div>
+          <div>
+            <p className="text-sm text-gray-600">Amount</p>
+            <p className="font-medium">${selectedTransaction?.amount}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Category</p>
+            <p className="font-medium">{selectedTransaction?.category}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Carbon Emissions</p>
+            <p className="font-medium">{selectedTransaction?.co2Emissions} kg CO₂</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Date</p>
+            <p className="font-medium">
+              {selectedTransaction?.date && new Date(selectedTransaction.date).toLocaleDateString()}
+            </p>
+          </div>
+          
+          <Button 
+            variant="secondary"
+            onClick={handleCloseModal}
+            className="w-full mt-6"
+          >
+            Close
+          </Button>
         </div>
-      )}
+      </Modal>
     </Layout>
   )
 }
