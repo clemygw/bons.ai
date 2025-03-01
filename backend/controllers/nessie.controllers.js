@@ -20,13 +20,9 @@ const getTransactions = asyncHandler(async (req, res) => {
       
       // Simplified filter to only check payer_id
       const filtered = response.data.results.filter(transaction => {
-        console.log('Checking transaction:', transaction); // Debug each transaction
-        //console.log(transaction[0])
-        console.log('Comparing payer_id:', transaction.payer_id, 'with accountId:', accountId);
         return transaction.payer_id === accountId;
       });
       
-      console.log('Filtered transactions:', filtered); // Debug filtered results
       res.json(filtered);
     } else {
       res.status(404);
