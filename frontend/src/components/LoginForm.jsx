@@ -2,20 +2,98 @@
 
 import { useState } from "react"
 import { EyeIcon, EyeOffIcon } from "./Icons"
+import axios from "axios"
+
+const API_URL = 'http://localhost:5001/api';
+
+async function getTransactions(accountId) {
+  try{
+    const response = await axios.get(`${API_URL}/nessie/transactions/${accountId}`);
+    return response.data;
+  }
+  catch (error) {
+    console.error('Error fetching transactions:', error);
+    return []; 
+  }
+}
+async function checkExistingTransactions(userId) {
+  try {
+    const response = await axios.get(`${API_URL}/transactions/user/${userId}`);
+    return response.data.length > 0;
+  } catch (error) {
+    console.error('Error checking existing transactions:', error);
+    return false;
+  }
+}
+
+async function postTransactions(userId, transactions) {
+  try {
+    const hasExistingTransactions = await checkExistingTransactions(userId);
+    
+    if (hasExistingTransactions) {
+      console.log('User already has transactions, skipping import');
+      return [];
+    }
+    const promises = transactions.map(transaction => {
+      const formattedTransaction = {
+        amount: transaction.amount,
+        date: new Date(transaction.transaction_date),
+        description: transaction.description || 'Nessie Transaction',
+        type: transaction.type || 'transfer',
+        user: userId,
+        category: "dining",
+        merchant: "Walmart"
+        // Add any other fields your Transaction model requires
+      };
+      
+      return axios.post(`${API_URL}/transactions/user/${userId}`, formattedTransaction);
+    });
+    
+    const results = await Promise.all(promises);
+    return results;
+  } catch (error) {
+    console.error('Error posting transactions:', error);
+    throw error;
+  }
+}
 
 const LoginForm = ({ onSubmit, isLoading }) => {
+  const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [company, setCompany] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSubmit({ username, password, company, rememberMe })
-    router.push("/dashboard")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // First, handle the login
+      //const loginResponse = await onSubmit({ username, password, company, rememberMe });
+      const transactions = await getTransactions("66ef229b9683f20dd518a02a");
+        
+      if (transactions.length > 0) {
+        // Post transactions to your backend
+        await postTransactions("67c2c6f00ed06018206e0c9c", transactions);
+      }
+      // Assuming loginResponse contains the user data including ID and account ID
+      // if (loginResponse && loginResponse.userId) {
+      //   // Get transactions from Nessie
+      //   const transactions = await getTransactions(loginResponse.accountId);
+        
+      //   if (transactions.length > 0) {
+      //     // Post transactions to your backend
+      //     await postTransactions(loginResponse.userId, transactions);
+      //   }
+      // }
+      await Promise.all([getTransactions, postTransactions]); // Add this line to ensure all async operations are complete
+      //router.push("/dashboard");
+    } catch (error) {
+      console.error('Error during login process:', error);
+      // Handle error appropriately
+    }
+    onSubmit({ email, password, company, rememberMe })
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
