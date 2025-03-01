@@ -68,6 +68,31 @@ const transactionSchema = new Schema({
 transactionSchema.index({ user: 1, date: -1 });
 transactionSchema.index({ category: 1 });
 
+// Add this middleware to automatically remove the transaction from user's array when deleted
+transactionSchema.pre('findOneAndDelete', async function(next) {
+  const transaction = await this.model.findOne(this.getQuery());
+  if (transaction) {
+    await mongoose.model('User').updateOne(
+      { _id: transaction.user },
+      { $pull: { transactions: transaction._id } }
+    );
+  }
+  next();
+});
+
+// Also handle regular delete
+transactionSchema.pre('deleteMany', async function(next) {
+  const transactions = await this.model.find(this.getQuery());
+  const transactionIds = transactions.map(t => t._id);
+  const userIds = [...new Set(transactions.map(t => t.user))];
+  
+  await mongoose.model('User').updateMany(
+    { _id: { $in: userIds } },
+    { $pull: { transactions: { $in: transactionIds } } }
+  );
+  next();
+});
+
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
 module.exports = Transaction; 
