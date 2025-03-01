@@ -1,74 +1,12 @@
-
 "use client"
 import { useState, useEffect, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
 import { useAuth } from "../context/AuthContext"
-
-
-// Mock data for transactions
-const mockTransactions = [
-  {
-    _id: "1",
-    amount: 75.5,
-    category: "grocery",
-    merchant: "Whole Foods",
-    date: "2024-02-20",
-    co2Emissions: 15,
-    items: [
-      { name: "Apples", price: 3.5, quantity: 2 },
-      { name: "Bread", price: 2.0, quantity: 1 },
-    ],
-  },
-  {
-    _id: "2",
-    amount: 25.0,
-    category: "transportation",
-    merchant: "Uber",
-    date: "2024-02-19",
-    co2Emissions: 35,
-    items: [
-      { name: "Ride to work", price: 25.0, quantity: 1 },
-    ],
-  },
-  {
-    _id: "3",
-    amount: 12.5,
-    category: "dining",
-    merchant: "Chipotle",
-    date: "2024-02-18",
-    co2Emissions: 8,
-    items: [
-      { name: "Burrito", price: 10.0, quantity: 1 },
-      { name: "Drink", price: 2.5, quantity: 1 },
-    ],
-  },
-  {
-    _id: "4",
-    amount: 50.0,
-    category: "retail",
-    merchant: "Amazon",
-    date: "2024-02-17",
-    co2Emissions: 12,
-    items: [
-      { name: "Book", price: 15.0, quantity: 1 },
-      { name: "Headphones", price: 35.0, quantity: 1 },
-    ],
-  },
-  {
-    _id: "5",
-    amount: 30.0,
-    category: "other",
-    merchant: "Misc Store",
-    date: "2024-02-16",
-    co2Emissions: 5,
-    items: [
-      { name: "Misc Item", price: 30.0, quantity: 1 },
-    ],
-  },
-]
+import axios from 'axios'
 
 const Dashboard = () => {
+  const [transactions, setTransactions] = useState([])
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [companyName, setCompanyName] = useState('')
   const { user } = useAuth()
@@ -95,7 +33,23 @@ const Dashboard = () => {
     fetchCompanyDetails();
   }, [user]);
 
-  // Calculate emissions by category and total emissions
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/transactions/user/67c2c6f00ed06018206e0c9c`);
+        console.log('Fetched transactions:', response.data);
+        setTransactions(response.data);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+        setTransactions([]); // Set empty array if error
+      }
+    };
+    fetchTransactions();
+    // if (user?._id) {
+    //   fetchTransactions();
+    // }
+  }, [user]);
+
   const { categoryEmissions, totalEmissions } = useMemo(() => {
     const categories = {
       dining: 0,
@@ -107,8 +61,7 @@ const Dashboard = () => {
     
     let total = 0
     
-    mockTransactions.forEach(transaction => {
-      // Map to our five categories (simplifying the category names if needed)
+    transactions.forEach(transaction => {
       const category = transaction.category.toLowerCase()
       if (categories.hasOwnProperty(category)) {
         categories[category] += transaction.co2Emissions
@@ -119,10 +72,9 @@ const Dashboard = () => {
       total += transaction.co2Emissions
     })
     
-    // Create array of category data and sort by emissions (highest first)
     const sortedCategoryEmissions = Object.entries(categories)
       .map(([name, emissions]) => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+        name: name.charAt(0).toUpperCase() + name.slice(1),
         emissions,
         percentage: total > 0 ? Math.round((emissions / total) * 100) : 0
       }))
@@ -132,10 +84,10 @@ const Dashboard = () => {
       categoryEmissions: sortedCategoryEmissions,
       totalEmissions: total
     }
-  }, [])
+  }, [transactions])
 
   const handleTransactionClick = (transactionId) => {
-    const transaction = mockTransactions.find(t => t._id === transactionId)
+    const transaction = transactions.find(t => t._id === transactionId)
     setSelectedTransaction(transaction)
   }
 
@@ -206,7 +158,7 @@ const Dashboard = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6">Recent Transactions</h2>
               <div className="space-y-4">
-                {mockTransactions.map((transaction) => (
+                {transactions.map((transaction) => (
                   <button
                     key={transaction._id}
                     onClick={() => handleTransactionClick(transaction._id)}
