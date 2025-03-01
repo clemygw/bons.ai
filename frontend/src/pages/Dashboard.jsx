@@ -1,18 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
-
-// Mock data for development
-const mockCategories = [
-  { name: "Dining", percentage: 45, emissions: 250 },
-  { name: "Transportation", percentage: 30, emissions: 180 },
-  { name: "Groceries", percentage: 25, emissions: 120 },
-  { name: "Retail", percentage: 20, emissions: 100 },
-  { name: "other", percentage: 15, emissions: 80 },
-
-]
 
 // Mock data for transactions
 const mockTransactions = [
@@ -31,10 +21,10 @@ const mockTransactions = [
   {
     _id: "2",
     amount: 25.0,
-    category: "rideshare",
+    category: "transportation",
     merchant: "Uber",
     date: "2024-02-19",
-    co2Emissions: 8,
+    co2Emissions: 31,
     items: [
       { name: "Ride to work", price: 25.0, quantity: 1 },
     ],
@@ -45,16 +35,73 @@ const mockTransactions = [
     category: "dining",
     merchant: "Chipotle",
     date: "2024-02-18",
-    co2Emissions: 5,
+    co2Emissions: 8,
     items: [
       { name: "Burrito", price: 10.0, quantity: 1 },
       { name: "Drink", price: 2.5, quantity: 1 },
+    ],
+  },
+  {
+    _id: "4",
+    amount: 50.0,
+    category: "retail",
+    merchant: "Amazon",
+    date: "2024-02-17",
+    co2Emissions: 12,
+    items: [
+      { name: "Book", price: 15.0, quantity: 1 },
+      { name: "Headphones", price: 35.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "5",
+    amount: 30.0,
+    category: "other",
+    merchant: "Misc Store",
+    date: "2024-02-16",
+    co2Emissions: 5,
+    items: [
+      { name: "Misc Item", price: 30.0, quantity: 1 },
     ],
   },
 ]
 
 const Dashboard = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
+
+  // Calculate emissions by category and total emissions
+  const { categoryEmissions, totalEmissions } = useMemo(() => {
+    const categories = {
+      dining: 0,
+      transportation: 0,
+      grocery: 0,
+      retail: 0,
+      other: 0
+    }
+    
+    let total = 0
+    
+    mockTransactions.forEach(transaction => {
+      // Map to our five categories (simplifying the category names if needed)
+      const category = transaction.category.toLowerCase()
+      if (categories.hasOwnProperty(category)) {
+        categories[category] += transaction.co2Emissions
+      } else {
+        categories.other += transaction.co2Emissions
+      }
+      
+      total += transaction.co2Emissions
+    })
+    
+    return {
+      categoryEmissions: Object.entries(categories).map(([name, emissions]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+        emissions,
+        percentage: total > 0 ? Math.round((emissions / total) * 100) : 0
+      })),
+      totalEmissions: total
+    }
+  }, [])
 
   const handleTransactionClick = (transactionId) => {
     const transaction = mockTransactions.find(t => t._id === transactionId)
@@ -89,12 +136,28 @@ const Dashboard = () => {
             <div className="col-span-2">
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-semibold mb-6">Carbon Emissions by Category</h2>
+                
+                {/* Total Emissions Bar */}
+                <div className="mb-8 space-y-2">
+                  <div className="flex justify-between text-sm font-medium">
+                    <span>Total Emissions</span>
+                    <span>{totalEmissions} kg CO₂</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-teal-600 rounded-full transition-all duration-500"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Category Emissions */}
                 <div className="space-y-6">
-                  {mockCategories.map((category) => (
+                  {categoryEmissions.map((category) => (
                     <div key={category.name} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{category.name}</span>
-                        <span>{category.emissions} kg CO₂</span>
+                        <span>{category.emissions} kg CO₂ ({category.percentage}%)</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
