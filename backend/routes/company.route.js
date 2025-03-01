@@ -5,6 +5,8 @@ const companyController = require('../controllers/company.controller');
 // Get all companies
 router.get('/', companyController.getAllCompanies);
 
+router.get('/:id', companyController.getCompanyById);
+
 // Create a new company
 router.post('/', companyController.createCompany);
 

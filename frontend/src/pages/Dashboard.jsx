@@ -1,24 +1,143 @@
-"use client"
 
-import { useState } from "react"
+"use client"
+import { useState, useEffect, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
+import { useAuth } from "../context/AuthContext"
 
-// Mock data for development
-const mockCategories = [
-  { name: "Dining", percentage: 45, emissions: 250 },
-  { name: "Transportation", percentage: 30, emissions: 180 },
-  { name: "Groceries", percentage: 25, emissions: 120 },
-]
 
+// Mock data for transactions
 const mockTransactions = [
-  { id: 1, date: "2024-02-20", merchant: "Whole Foods", amount: 75.5, category: "Groceries", emissions: 15 },
-  { id: 2, date: "2024-02-19", merchant: "Uber", amount: 25.0, category: "Transportation", emissions: 8 },
-  { id: 3, date: "2024-02-18", merchant: "Chipotle", amount: 12.5, category: "Dining", emissions: 5 },
+  {
+    _id: "1",
+    amount: 75.5,
+    category: "grocery",
+    merchant: "Whole Foods",
+    date: "2024-02-20",
+    co2Emissions: 15,
+    items: [
+      { name: "Apples", price: 3.5, quantity: 2 },
+      { name: "Bread", price: 2.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "2",
+    amount: 25.0,
+    category: "transportation",
+    merchant: "Uber",
+    date: "2024-02-19",
+    co2Emissions: 35,
+    items: [
+      { name: "Ride to work", price: 25.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "3",
+    amount: 12.5,
+    category: "dining",
+    merchant: "Chipotle",
+    date: "2024-02-18",
+    co2Emissions: 8,
+    items: [
+      { name: "Burrito", price: 10.0, quantity: 1 },
+      { name: "Drink", price: 2.5, quantity: 1 },
+    ],
+  },
+  {
+    _id: "4",
+    amount: 50.0,
+    category: "retail",
+    merchant: "Amazon",
+    date: "2024-02-17",
+    co2Emissions: 12,
+    items: [
+      { name: "Book", price: 15.0, quantity: 1 },
+      { name: "Headphones", price: 35.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "5",
+    amount: 30.0,
+    category: "other",
+    merchant: "Misc Store",
+    date: "2024-02-16",
+    co2Emissions: 5,
+    items: [
+      { name: "Misc Item", price: 30.0, quantity: 1 },
+    ],
+  },
 ]
 
 const Dashboard = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [companyName, setCompanyName] = useState('')
+  const { user } = useAuth()
+
+  useEffect(() => {
+    const fetchCompanyDetails = async () => {
+      if (user?.company) {
+        console.log('Fetching company details for ID:', user.company);
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies/${user.company}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('Company data received:', data);
+          setCompanyName(data.name);
+        } catch (error) {
+          console.error('Error fetching company details:', error);
+          setCompanyName('Unknown Company');
+        }
+      }
+    };
+
+    fetchCompanyDetails();
+  }, [user]);
+
+  // Calculate emissions by category and total emissions
+  const { categoryEmissions, totalEmissions } = useMemo(() => {
+    const categories = {
+      dining: 0,
+      transportation: 0,
+      grocery: 0,
+      retail: 0,
+      other: 0
+    }
+    
+    let total = 0
+    
+    mockTransactions.forEach(transaction => {
+      // Map to our five categories (simplifying the category names if needed)
+      const category = transaction.category.toLowerCase()
+      if (categories.hasOwnProperty(category)) {
+        categories[category] += transaction.co2Emissions
+      } else {
+        categories.other += transaction.co2Emissions
+      }
+      
+      total += transaction.co2Emissions
+    })
+    
+    // Create array of category data and sort by emissions (highest first)
+    const sortedCategoryEmissions = Object.entries(categories)
+      .map(([name, emissions]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+        emissions,
+        percentage: total > 0 ? Math.round((emissions / total) * 100) : 0
+      }))
+      .sort((a, b) => b.emissions - a.emissions)
+    
+    return {
+      categoryEmissions: sortedCategoryEmissions,
+      totalEmissions: total
+    }
+  }, [])
+
+  const handleTransactionClick = (transactionId) => {
+    const transaction = mockTransactions.find(t => t._id === transactionId)
+    setSelectedTransaction(transaction)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,7 +149,7 @@ const Dashboard = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <h1 className="text-2xl font-bold text-teal-600">bons.ai</h1>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">Acme Corp</span>
+              <span className="text-sm text-gray-600">{companyName || 'Loading...'}</span>
               <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
                 <Bell size={20} />
               </button>
@@ -48,12 +167,28 @@ const Dashboard = () => {
             <div className="col-span-2">
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-semibold mb-6">Carbon Emissions by Category</h2>
+                
+                {/* Total Emissions Bar */}
+                <div className="mb-8 space-y-2">
+                  <div className="flex justify-between text-sm font-medium">
+                    <span>Total Emissions</span>
+                    <span>{totalEmissions} kg CO₂</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-teal-600 rounded-full transition-all duration-500"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Category Emissions - Sorted by size */}
                 <div className="space-y-6">
-                  {mockCategories.map((category) => (
+                  {categoryEmissions.map((category) => (
                     <div key={category.name} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{category.name}</span>
-                        <span>{category.emissions} kg CO₂</span>
+                        <span>{category.emissions} kg CO₂ ({category.percentage}%)</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
@@ -73,8 +208,8 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {mockTransactions.map((transaction) => (
                   <button
-                    key={transaction.id}
-                    onClick={() => setSelectedTransaction(transaction)}
+                    key={transaction._id}
+                    onClick={() => handleTransactionClick(transaction._id)}
                     className="w-full text-left p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex justify-between items-start">
@@ -84,7 +219,7 @@ const Dashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-medium">${transaction.amount}</p>
-                        <p className="text-sm text-gray-600">{transaction.emissions} kg CO₂</p>
+                        <p className="text-sm text-gray-600">{transaction.co2Emissions} kg CO₂</p>
                       </div>
                     </div>
                   </button>
@@ -115,11 +250,19 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Carbon Emissions</p>
-                <p className="font-medium">{selectedTransaction.emissions} kg CO₂</p>
+                <p className="font-medium">{selectedTransaction.co2Emissions} kg CO₂</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Date</p>
-                <p className="font-medium">{selectedTransaction.date}</p>
+                <p className="font-medium">{new Date(selectedTransaction.date).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Items</p>
+                {selectedTransaction.items.map(item => (
+                  <div key={item.name}>
+                    <p className="font-medium">{item.name} - ${item.price} x {item.quantity}</p>
+                  </div>
+                ))}
               </div>
             </div>
             <button

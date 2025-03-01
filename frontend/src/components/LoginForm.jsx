@@ -93,21 +93,22 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       // Handle error appropriately
     }
     onSubmit({ email, password, company, rememberMe })
+
   }
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-          Username
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          Email
         </label>
         <input
-          id="username"
+          id="email"
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
-          placeholder="Enter your username"
+          placeholder="Enter your email"
         />
       </div>
 

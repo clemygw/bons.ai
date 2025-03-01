@@ -1,37 +1,38 @@
-// This file would contain your actual authentication API calls
+const authService = {
+  signin: async (credentials) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      })
 
-const API_URL = "http://localhost:5000/api" // Replace with your actual API URL
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to login")
+      }
 
-export const authService = {
-  login: async (credentials) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    })
-
-    if (!response.ok) {
-      throw new Error("Login failed")
+      // Store token and user data
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("user", JSON.stringify(data.user))
+      
+      return data
+    } catch (error) {
+      throw error
     }
-
-    const data = await response.json()
-
-    // Store the token in localStorage or a more secure storage
-    localStorage.setItem("token", data.token)
-
-    return data
   },
 
   logout: () => {
     localStorage.removeItem("token")
+    localStorage.removeItem("user")
   },
 
   getCurrentUser: () => {
-    const token = localStorage.getItem("token")
-    // You might want to decode the JWT token here to get user info
-    return token ? { token } : null
+    const user = localStorage.getItem("user")
+    return user ? JSON.parse(user) : null
   },
 }
 

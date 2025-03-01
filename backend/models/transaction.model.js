@@ -19,20 +19,8 @@ const transactionSchema = new Schema({
       values: [
         'dining',
         'grocery',
-        'gas',
-        'rideshare',
-        'shopping',
-        'entertainment',
-        'travel',
-        'healthcare',
-        'utilities',
-        'other',
-        'housing',
-        'education',
-        'insurance',
         'transportation',
-        'clothing',
-        'subscription',
+        'retail',
         'other'
       ],
       message: '{VALUE} is not a supported category'

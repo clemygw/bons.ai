@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 import LoginForm from "../components/LoginForm"
 import BonsaiLogo from "../assets/bonsai-logo"
+import authService from "../services/authService"
 
 const Login = () => {
   const navigate = useNavigate()
+  const { setUser } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [companyName, setCompanyName] = useState("")
@@ -16,13 +19,16 @@ const Login = () => {
       setIsLoading(true)
       setError("")
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Call the auth service
+      const data = await authService.signin(credentials)
+      
+      // Update global auth context
+      setUser(data.user)
 
-      // If login is successful, redirect to dashboard
+      // Navigate to dashboard
       navigate("/dashboard")
     } catch (err) {
-      setError("Invalid username or password. Please try again.")
+      setError(err.message || "Invalid email or password. Please try again.")
       console.error("Login error:", err)
     } finally {
       setIsLoading(false)
