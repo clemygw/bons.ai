@@ -15,21 +15,21 @@ const Login = () => {
   const [companyName, setCompanyName] = useState("")
 
   const handleLogin = async (credentials) => {
+    setIsLoading(true)
     try {
-      setIsLoading(true)
-      setError("")
-
-      // Call the auth service
-      const data = await authService.signin(credentials)
+      const response = await authService.signin(credentials)
+      setUser(response.user)
       
-      // Update global auth context
-      setUser(data.user)
-
-      // Navigate to dashboard
-      navigate("/dashboard")
-    } catch (err) {
-      setError(err.message || "Invalid email or password. Please try again.")
-      console.error("Login error:", err)
+      // Return the login response first
+      setTimeout(() => {
+        navigate("/dashboard")
+      }, 100)
+      
+      return response
+    } catch (error) {
+      console.error("Login failed:", error)
+      // Handle login error (show message, etc.)
+      return null
     } finally {
       setIsLoading(false)
     }

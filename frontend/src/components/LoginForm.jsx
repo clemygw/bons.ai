@@ -7,6 +7,7 @@ import axios from "axios"
 async function getTransactions(accountId) {
   try{
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/nessie/transactions/${accountId}`);
+    console.log("Getting all transactions for account", accountId);
     return response.data;
   }
   catch (error) {
@@ -14,9 +15,10 @@ async function getTransactions(accountId) {
     return []; 
   }
 }
+
 async function checkExistingTransactions(userId) {
   try {
-    const response = await axios.get(`${API_URL}/transactions/user/${userId}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/user/${userId}`);
     return response.data.length > 0;
   } catch (error) {
     console.error('Error checking existing transactions:', error);
@@ -44,7 +46,7 @@ async function postTransactions(userId, transactions) {
         // Add any other fields your Transaction model requires
       };
       
-      return axios.post(`${API_URL}/transactions/user/${userId}`, formattedTransaction);
+      return axios.post(`${import.meta.env.VITE_API_URL}/api/transactions/user/${userId}`, formattedTransaction);
     });
     
     const results = await Promise.all(promises);
@@ -67,32 +69,31 @@ const LoginForm = ({ onSubmit, isLoading }) => {
     e.preventDefault();
     try {
       // First, handle the login
-      //const loginResponse = await onSubmit({ username, password, company, rememberMe });
-      const transactions = await getTransactions("66ef229b9683f20dd518a02a");
+      const loginResponse = await onSubmit({ email, password, company, rememberMe });
+      
+      // Only proceed if login was successful and we have a user ID
+      if (loginResponse && loginResponse.user && loginResponse.user.id) {
+        // Get transactions from Nessie - using a fixed account ID for now
+        // In production, you would use the user's actual account ID
+        const transactions = await getTransactions("66ef229b9683f20dd518a02a");
         
-      if (transactions.length > 0) {
-        // Post transactions to your backend
-        await postTransactions("67c2c6f00ed06018206e0c9c", transactions);
+        if (transactions.length > 0) {
+          // Post transactions to your backend and link them to the user
+          await postTransactions(loginResponse.user.id, transactions);
+          
+          // Note: The backend should handle adding the transaction IDs to the user's transactions array
+          // This happens in your createTransaction controller where you do:
+          // await User.findByIdAndUpdate(req.params.userId, { $push: { transactions: savedTransaction._id } });
+        }
+      } else {
+        console.log("Login failed horribly. loginResponse:", loginResponse.user);
       }
-      // Assuming loginResponse contains the user data including ID and account ID
-      // if (loginResponse && loginResponse.userId) {
-      //   // Get transactions from Nessie
-      //   const transactions = await getTransactions(loginResponse.accountId);
-        
-      //   if (transactions.length > 0) {
-      //     // Post transactions to your backend
-      //     await postTransactions(loginResponse.userId, transactions);
-      //   }
-      // }
-      await Promise.all([getTransactions, postTransactions]); // Add this line to ensure all async operations are complete
-      //router.push("/dashboard");
     } catch (error) {
       console.error('Error during login process:', error);
       // Handle error appropriately
     }
-    onSubmit({ email, password, company, rememberMe })
-
   }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
