@@ -2,12 +2,14 @@ import { User, Bell } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useUser } from "../context/UserContext"
+import { useCompany } from "../context/CompanyContext"
 
-const TopBar = ({ companyName = 'Loading...' }) => {
+const TopBar = () => {
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
-  const { logout } = useUser()
+  const { logout, user } = useUser()
   const navigate = useNavigate()
+  const { company } = useCompany()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,19 +30,25 @@ const TopBar = ({ companyName = 'Loading...' }) => {
     setShowDropdown(false)
   }
 
+  const handleSettings = () => {
+    navigate('/settings')
+    setShowDropdown(false)
+  }
+
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-teal-600">bons.ai</h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{companyName}</span>
+          <span className="text-sm text-gray-600">{"Company: " + company?.name || 'Loading...'}</span>
+          <span className="text-sm text-gray-600">Logged in as: {user?.firstName}</span>
           <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
             <Bell size={20} />
           </button>
           <div className="relative" ref={dropdownRef}>
             <button 
               onClick={() => {
-                console.log("Toggling dropdown")
+                console.log("Toggling dropdown!")
                 setShowDropdown(!showDropdown)
               }}
               className="p-2 text-gray-600 hover:text-teal-600 transition-colors"
@@ -50,6 +58,12 @@ const TopBar = ({ companyName = 'Loading...' }) => {
             
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                <button
+                  onClick={handleSettings}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                >
+                  Account Settings
+                </button>
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
