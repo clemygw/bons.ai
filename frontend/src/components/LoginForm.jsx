@@ -1,17 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { EyeIcon, EyeOffIcon } from "../components/Icons"
+import { EyeIcon, EyeOffIcon } from "./Icons"
 
 const LoginForm = ({ onSubmit, isLoading }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [company, setCompany] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit({ username, password, rememberMe })
+    onSubmit({ username, password, company, rememberMe })
   }
 
   return (
@@ -55,6 +56,20 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         </div>
       </div>
 
+      <div>
+        <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+          Company Name (Optional)
+        </label>
+        <input
+          id="company"
+          type="text"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+          placeholder="Enter your company name"
+        />
+      </div>
+
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <input
@@ -73,7 +88,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         </a>
       </div>
 
-      <button   
+      <button
         type="submit"
         disabled={isLoading}
         className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
