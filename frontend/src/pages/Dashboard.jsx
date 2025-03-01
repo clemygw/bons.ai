@@ -9,16 +9,57 @@ const mockCategories = [
   { name: "Dining", percentage: 45, emissions: 250 },
   { name: "Transportation", percentage: 30, emissions: 180 },
   { name: "Groceries", percentage: 25, emissions: 120 },
+  { name: "Retail", percentage: 20, emissions: 100 },
+  { name: "other", percentage: 15, emissions: 80 },
+
 ]
 
+// Mock data for transactions
 const mockTransactions = [
-  { id: 1, date: "2024-02-20", merchant: "Whole Foods", amount: 75.5, category: "Groceries", emissions: 15 },
-  { id: 2, date: "2024-02-19", merchant: "Uber", amount: 25.0, category: "Transportation", emissions: 8 },
-  { id: 3, date: "2024-02-18", merchant: "Chipotle", amount: 12.5, category: "Dining", emissions: 5 },
+  {
+    _id: "1",
+    amount: 75.5,
+    category: "grocery",
+    merchant: "Whole Foods",
+    date: "2024-02-20",
+    co2Emissions: 15,
+    items: [
+      { name: "Apples", price: 3.5, quantity: 2 },
+      { name: "Bread", price: 2.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "2",
+    amount: 25.0,
+    category: "rideshare",
+    merchant: "Uber",
+    date: "2024-02-19",
+    co2Emissions: 8,
+    items: [
+      { name: "Ride to work", price: 25.0, quantity: 1 },
+    ],
+  },
+  {
+    _id: "3",
+    amount: 12.5,
+    category: "dining",
+    merchant: "Chipotle",
+    date: "2024-02-18",
+    co2Emissions: 5,
+    items: [
+      { name: "Burrito", price: 10.0, quantity: 1 },
+      { name: "Drink", price: 2.5, quantity: 1 },
+    ],
+  },
 ]
 
 const Dashboard = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
+
+  const handleTransactionClick = (transactionId) => {
+    const transaction = mockTransactions.find(t => t._id === transactionId)
+    setSelectedTransaction(transaction)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -73,8 +114,8 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {mockTransactions.map((transaction) => (
                   <button
-                    key={transaction.id}
-                    onClick={() => setSelectedTransaction(transaction)}
+                    key={transaction._id}
+                    onClick={() => handleTransactionClick(transaction._id)}
                     className="w-full text-left p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex justify-between items-start">
@@ -84,7 +125,7 @@ const Dashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-medium">${transaction.amount}</p>
-                        <p className="text-sm text-gray-600">{transaction.emissions} kg CO₂</p>
+                        <p className="text-sm text-gray-600">{transaction.co2Emissions} kg CO₂</p>
                       </div>
                     </div>
                   </button>
@@ -115,11 +156,19 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Carbon Emissions</p>
-                <p className="font-medium">{selectedTransaction.emissions} kg CO₂</p>
+                <p className="font-medium">{selectedTransaction.co2Emissions} kg CO₂</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Date</p>
-                <p className="font-medium">{selectedTransaction.date}</p>
+                <p className="font-medium">{new Date(selectedTransaction.date).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Items</p>
+                {selectedTransaction.items.map(item => (
+                  <div key={item.name}>
+                    <p className="font-medium">{item.name} - ${item.price} x {item.quantity}</p>
+                  </div>
+                ))}
               </div>
             </div>
             <button
