@@ -40,7 +40,7 @@ const TopBar = ({ companyName = 'Loading...' }) => {
           <div className="relative" ref={dropdownRef}>
             <button 
               onClick={() => {
-                console.log("Toggling dropdown")
+                console.log("Toggling dropdown!")
                 setShowDropdown(!showDropdown)
               }}
               className="p-2 text-gray-600 hover:text-teal-600 transition-colors"
