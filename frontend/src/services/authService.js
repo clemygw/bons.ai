@@ -1,11 +1,7 @@
-// This file would contain your actual authentication API calls
-
-const API_URL = "http://localhost:5001/api" // Replace with your actual API URL
-
 const authService = {
   signin: async (credentials) => {
     try {
-      const response = await fetch(`${API_URL}/auth/signin`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
