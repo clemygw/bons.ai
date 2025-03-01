@@ -29,6 +29,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true
+  },
+  company_id: {
+    type: String,
+    required: false,
+    trim: true
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt timestamps

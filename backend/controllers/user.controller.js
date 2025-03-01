@@ -1,9 +1,15 @@
-const User = require('../models/user.model');
+const User = require('../models/User.model');
 
 // Create a new user
 const createUser = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
+    // Use provided user_id or generate a new one
+    const userData = {
+      ...req.body,
+      user_id: req.body.user_id
+    };
+
+    const newUser = await User.create(userData);
     
     // Remove password from response
     const userResponse = newUser.toObject();
