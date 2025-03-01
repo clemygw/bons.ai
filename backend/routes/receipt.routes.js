@@ -12,19 +12,24 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsDir)){
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure multer
-const upload = multer({ 
-    dest: uploadsDir,
-    limits: {
-        fileSize: 15 * 1024 * 1024 // 10MB limit
+// Configure multer for file storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads');
+    // Create uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
 });
+
+const upload = multer({ storage: storage });
 
 // Add this before your routes
 const multerErrorHandler = (err, req, res, next) => {
@@ -39,8 +44,15 @@ const multerErrorHandler = (err, req, res, next) => {
 };
 
 // POST /api/receipt
-router.post('/', upload.single('receipt'), async (req, res) => {
+router.post('/upload', upload.single('receipt'), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'No file uploaded' 
+      });
+    }
+
     const filePath = req.file.path;
     const imageData = fs.readFileSync(filePath, { encoding: 'base64' });
 
@@ -53,6 +65,7 @@ router.post('/', upload.single('receipt'), async (req, res) => {
           + "2. Categorize the transaction as: 'dining', 'grocery', 'retail', or 'other'\n"
           + "3. Calculate CO2 emissions using these values (kg CO2e per kg food produced):\n"
           + "4. Even if the item is not listed, if it is a meat, assume it is a beef herd animal and use the value for beef (beef herd) \n"
+          + "5. Be extremely thorough - do not skip any items, even if they seem insignificant\n"
           + "- Beef (beef herd): 99.48\n"
           + "- Beef (dairy herd): 33.3\n"
           + "- Lamb & Mutton: 39.72\n"
@@ -109,13 +122,23 @@ router.post('/', upload.single('receipt'), async (req, res) => {
 
     const result = response.choices[0].message.content;
     
+    // Clean up: Delete the file after processing
+    fs.unlink(filePath, (err) => {
+      if (err) console.error('Error deleting file:', err);
+    });
+
     res.json({
       success: true,
-      totalEmissions: parseFloat(result) || result
+      data: result
     });
 
   } catch (error) {
     console.error('Error processing receipt:', error);
+    if (req.file) {
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting file:', err);
+      });
+    }
     res.status(500).json({ 
       success: false, 
       error: error.message,
@@ -126,5 +149,9 @@ router.post('/', upload.single('receipt'), async (req, res) => {
 
 // Use the error handler
 router.use(multerErrorHandler);
+
+router.get('/test', (req, res) => {
+  res.json({ message: 'Receipt route is working' });
+});
 
 module.exports = router;

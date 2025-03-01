@@ -3,6 +3,7 @@ import { useAuth } from "./context/AuthContext"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Leaderboard from "./pages/Leaderboard"
+import CameraCapture from './components/CameraCapture';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -38,6 +39,7 @@ function App() {
         }
       />
       <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/upload-receipt" element={<CameraCapture />} />
     </Routes>
   )
 }

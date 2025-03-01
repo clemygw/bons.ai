@@ -16,7 +16,7 @@ async function getTransactions(accountId) {
 }
 async function checkExistingTransactions(userId) {
   try {
-    const response = await axios.get(`${API_URL}/transactions/user/${userId}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions/user/${userId}`);
     return response.data.length > 0;
   } catch (error) {
     console.error('Error checking existing transactions:', error);
@@ -44,7 +44,7 @@ async function postTransactions(userId, transactions) {
         // Add any other fields your Transaction model requires
       };
       
-      return axios.post(`${API_URL}/transactions/user/${userId}`, formattedTransaction);
+      return axios.post(`${import.meta.env.VITE_API_URL}/transactions/user/${userId}`, formattedTransaction);
     });
     
     const results = await Promise.all(promises);
