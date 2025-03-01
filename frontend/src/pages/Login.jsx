@@ -26,7 +26,7 @@ const Login = () => {
       setUser(data.user)
 
       // Navigate to dashboard
-      navigate("/dashboard")
+      navigate("/garden")
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.")
       console.error("Login error:", err)

@@ -36,7 +36,9 @@ const Garden = () => {
   const [showCamera, setShowCamera] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  const treeSize = Math.min(100 + (carbonSaved / 10) * 200, 3000) // Tree grows 20px for every 10kg saved, max 300px
+  // Calculate the height of the tree based on carbon saved
+  const treeHeight = Math.min(100 + (carbonSaved / 1) * 200, 300); // Max height of 300px
+  const treeBaseY = 400; // Y position for the bottom of the tree
 
   const handleTransactionClick = (transaction) => {
     setSelectedTransaction(transaction)
@@ -69,11 +71,11 @@ const Garden = () => {
 
         {/* Bonsai Tree */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 transition-all duration-1000"
+          className="absolute left-1/2 transition-all duration-1000"
           style={{
-            width: `${treeSize}px`,
-            height: `${treeSize}px`,
-            transform: 'translate(-50%, -900px)',
+            width: `${treeHeight}px`,
+            height: `${treeHeight}px`,
+            transform: `translate(-50%, ${treeBaseY - treeHeight}px)`, // Keep the bottom of the tree at the same Y position
           }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
