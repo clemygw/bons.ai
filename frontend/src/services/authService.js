@@ -19,7 +19,7 @@ const authService = {
       // Store token and complete user data (which now includes transactions)
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      console.log('User data with transactions:', data.user);
+      //console.log('User data with transactions:', data.user);
       
       return data;
     } catch (error) {

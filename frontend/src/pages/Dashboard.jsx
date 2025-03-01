@@ -2,41 +2,22 @@
 import { useState, useEffect, useMemo } from "react"
 import { User, Bell } from "lucide-react"
 import DevSidebar from "../components/DevSidebar"
+import TopBar from "../components/TopBar"
 import { useAuth } from "../context/AuthContext"
+import { useCompany } from "../context/CompanyContext"
 import axios from 'axios'
+import Layout from "../components/Layout"
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([])
   const [selectedTransaction, setSelectedTransaction] = useState(null)
-  const [companyName, setCompanyName] = useState('')
   const { user } = useAuth()
-
-  useEffect(() => {
-    const fetchCompanyDetails = async () => {
-      if (user?.company) {
-        console.log('Fetching company details for ID:', user.company._id);
-        try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies/${user.company._id}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          console.log('Company data received:', data);
-          setCompanyName(data.name);
-        } catch (error) {
-          console.error('Error fetching company details:', error);
-          setCompanyName('Unknown Company');
-        }
-      }
-    };
-
-    fetchCompanyDetails();
-  }, [user]);
+  const { company } = useCompany()
 
   useEffect(() => {
     const fetchTransactions = async () => {
       if (user?.transactions) {
-        console.log('Fetching transactions for user:', user.transactions);
+        console.log('Fetching transactions from user...');
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions/user/${user.id}`);
           if (!response.ok) {
@@ -68,7 +49,6 @@ const Dashboard = () => {
     
     transactions.forEach(transaction => {
       const category = transaction.category.toLowerCase()
-      console.log("here")
       if (categories.hasOwnProperty(category)) {
         categories[category] += transaction.co2Emissions
       } else {
@@ -98,94 +78,71 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DevSidebar />
-
-      {/* Top Bar */}
-      <div className="ml-64">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-teal-600">bons.ai</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{companyName || 'Loading...'}</span>
-              <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
-                <Bell size={20} />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
-                <User size={20} />
-              </button>
+    <Layout>
+      <div className="grid grid-cols-3 gap-8">
+        {/* Main Box (2/3) */}
+        <div className="col-span-2">
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h2 className="text-xl font-semibold mb-6">Carbon Emissions by Category</h2>
+            
+            {/* Total Emissions Bar */}
+            <div className="mb-8 space-y-2">
+              <div className="flex justify-between text-sm font-medium">
+                <span>Total Emissions</span>
+                <span>{totalEmissions} kg CO₂</span>
+              </div>
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-teal-600 rounded-full transition-all duration-500"
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-3 gap-8">
-            {/* Main Box (2/3) */}
-            <div className="col-span-2">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-6">Carbon Emissions by Category</h2>
-                
-                {/* Total Emissions Bar */}
-                <div className="mb-8 space-y-2">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span>Total Emissions</span>
-                    <span>{totalEmissions} kg CO₂</span>
+            
+            {/* Category Emissions - Sorted by size */}
+            <div className="space-y-6">
+              {categoryEmissions.map((category) => (
+                <div key={category.name} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>{category.name}</span>
+                    <span>{category.emissions} kg CO₂ ({category.percentage}%)</span>
                   </div>
-                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-teal-600 rounded-full transition-all duration-500"
-                      style={{ width: '100%' }}
+                      className="h-full bg-teal-500 rounded-full transition-all duration-500"
+                      style={{ width: `${category.percentage}%` }}
                     />
                   </div>
                 </div>
-                
-                {/* Category Emissions - Sorted by size */}
-                <div className="space-y-6">
-                  {categoryEmissions.map((category) => (
-                    <div key={category.name} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>{category.name}</span>
-                        <span>{category.emissions} kg CO₂ ({category.percentage}%)</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-teal-500 rounded-full transition-all duration-500"
-                          style={{ width: `${category.percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Transactions List (1/3) */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-6">Recent Transactions</h2>
-              <div className="space-y-4">
-                {transactions.map((transaction) => (
-                  <button
-                    key={transaction._id}
-                    onClick={() => handleTransactionClick(transaction._id)}
-                    className="w-full text-left p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">{transaction.merchant}</h3>
-                        <p className="text-sm text-gray-600">{transaction.category}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">${transaction.amount}</p>
-                        <p className="text-sm text-gray-600">{transaction.co2Emissions} kg CO₂</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
-        </main>
+        </div>
+
+        {/* Transactions List (1/3) */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-6">Recent Transactions</h2>
+          <div className="space-y-4">
+            {transactions.map((transaction) => (
+              <button
+                key={transaction._id}
+                onClick={() => handleTransactionClick(transaction._id)}
+                className="w-full text-left p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium">{transaction.merchant}</h3>
+                    <p className="text-sm text-gray-600">{transaction.category}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">${transaction.amount}</p>
+                    <p className="text-sm text-gray-600">{transaction.co2Emissions} kg CO₂</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Transaction Details Modal */}
@@ -232,7 +189,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   )
 }
 

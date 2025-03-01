@@ -7,6 +7,8 @@ router.get('/', companyController.getAllCompanies);
 
 router.get('/:id', companyController.getCompanyById);
 
+router.get('/:id/leaderboard', companyController.getCompanyLeaderboard);
+
 // Create a new company
 router.post('/', companyController.createCompany);
 

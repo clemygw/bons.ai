@@ -1,39 +1,103 @@
 "use client"
 
-import { useState } from "react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { useState, useEffect } from "react"
+import { useCompany } from "../context/CompanyContext"
 import DevSidebar from "../components/DevSidebar"
+import TopBar from "../components/TopBar"
 
-// Mock data for development
-const mockEmissionsData = [
-  { date: "2024-01", emissions: 850 },
-  { date: "2024-02", emissions: 740 },
-  { date: "2024-03", emissions: 680 },
-  { date: "2024-04", emissions: 720 },
-  { date: "2024-05", emissions: 630 },
-  { date: "2024-06", emissions: 590 },
-]
-
-const mockLeaderboard = [
-  { rank: 1, name: "John Doe", company: "Acme Corp", emissions: 450, change: -15 },
-  { rank: 2, name: "Jane Smith", company: "TechCo", emissions: 520, change: -8 },
-  { rank: 3, name: "Bob Johnson", company: "EcoTech", emissions: 580, change: -12 },
-  { rank: 4, name: "Alice Brown", company: "GreenCo", emissions: 610, change: -5 },
-  { rank: 5, name: "Charlie Wilson", company: "Acme Corp", emissions: 650, change: -10 },
-]
+const timeRangeLabels = {
+  "1m": "1 month",
+  "3m": "3 months",
+  "6m": "6 months",
+  "1y": "1 year",
+};
 
 const Leaderboard = () => {
-  const [timeRange, setTimeRange] = useState("6m")
+  const { company } = useCompany();
+  const [leaderboardData, setLeaderboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeRange, setTimeRange] = useState("6m");
+
+  useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      if (!company?._id) return;
+      
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/companies/${company._id}/leaderboard?timeRange=${timeRange}`
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch leaderboard data');
+        }
+        const data = await response.json();
+        setLeaderboardData(data);
+      } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboardData();
+  }, [company, timeRange]);
+
+  if (loading) {
+    return (
+      <div className="flex">
+        <DevSidebar />
+        <div className="flex-1">
+          <TopBar companyName={company?.name} />
+          <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex">
+        <DevSidebar />
+        <div className="flex-1">
+          <TopBar companyName={company?.name} />
+          <div className="text-center text-red-600 p-4">
+            Error loading leaderboard: {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!leaderboardData) {
+    return (
+      <div className="flex">
+        <DevSidebar />
+        <div className="flex-1">
+          <TopBar companyName={company?.name} />
+          <div className="text-center text-gray-600 p-4">
+            No leaderboard data available
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex">
       <DevSidebar />
-
-      <div className="ml-64">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-teal-600">Leaderboard</h1>
-            <div className="flex items-center gap-4">
+      <div className="flex-1">
+        <TopBar companyName={company?.name} />
+        <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 ml-2">
+                {leaderboardData?.companyName} Leaderboard
+              </h1>
+              
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
@@ -45,96 +109,96 @@ const Leaderboard = () => {
                 <option value="1y">Last Year</option>
               </select>
             </div>
-          </div>
-        </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Company Stats */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">Total Emissions Reduced</h3>
-              <p className="text-3xl font-bold text-teal-600">2,450 kg</p>
-              <p className="text-sm text-gray-600 mt-1">CO₂ equivalent</p>
+            {/* Company Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-sm font-medium text-gray-600">
+                  Total Emissions Reduced ({timeRangeLabels[timeRange]})
+                </h3>
+                <p className="text-3xl font-bold text-teal-600">
+                  {Math.round(leaderboardData.companyStats.totalEmissionsReduced).toLocaleString()} kg
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-sm font-medium text-gray-600">
+                  Average Per User ({timeRangeLabels[timeRange]})
+                </h3>
+                <p className="text-3xl font-bold text-teal-600">
+                  {Math.round(leaderboardData.companyStats.averageReductionPerUser).toLocaleString()} kg
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-sm font-medium text-gray-600">Top Performer</h3>
+                <p className="text-3xl font-bold text-teal-600">
+                  {leaderboardData.companyStats.topPerformer}
+                </p>
+              </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">Average per Employee</h3>
-              <p className="text-3xl font-bold text-teal-600">490 kg</p>
-              <p className="text-sm text-gray-600 mt-1">CO₂ equivalent</p>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">Company Ranking</h3>
-              <p className="text-3xl font-bold text-teal-600">#3</p>
-              <p className="text-sm text-gray-600 mt-1">of 50 companies</p>
-            </div>
-          </div>
 
-          {/* Emissions Graph */}
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-6">Carbon Emissions Over Time</h2>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockEmissionsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="emissions"
-                    stroke="#0d9488"
-                    strokeWidth={2}
-                    dot={{ fill: "#0d9488" }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            {/* Leaderboard Table */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800">Employee Rankings</h2>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rank
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Emissions Reduced
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Reduction %
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {leaderboardData.leaderboard.map((entry) => (
+                      <tr key={entry.userId} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">#{entry.rank}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {entry.firstName} {entry.lastName}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {Math.round(entry.emissionsReduced).toLocaleString()} kg
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className={`text-sm font-medium ${
+                            parseFloat(entry.percentageReduced) >= 0 
+                              ? 'text-green-600' 
+                              : 'text-red-600'
+                          }`}>
+                            {entry.percentageReduced}%
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-
-          {/* Leaderboard Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold">Employee Rankings</h2>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {mockLeaderboard.map((user) => (
-                <div key={user.rank} className="px-6 py-4 flex items-center">
-                  <div className="w-12 text-center">
-                    <span
-                      className={`
-                      inline-flex items-center justify-center w-8 h-8 rounded-full
-                      ${
-                        user.rank === 1
-                          ? "bg-yellow-100 text-yellow-700"
-                          : user.rank === 2
-                            ? "bg-gray-100 text-gray-700"
-                            : user.rank === 3
-                              ? "bg-orange-100 text-orange-700"
-                              : "bg-gray-50 text-gray-600"
-                      }
-                    `}
-                    >
-                      {user.rank}
-                    </span> 
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">{user.name}</h3>
-                    <p className="text-sm text-gray-600">{user.company}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium">{user.emissions} kg CO₂</p>
-                    <p className={`text-sm ${user.change < 0 ? "text-green-600" : "text-red-600"}`}>
-                      {user.change < 0 ? "↓" : "↑"} {Math.abs(user.change)}%
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Leaderboard
+export default Leaderboard;
 
