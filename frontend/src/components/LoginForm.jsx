@@ -75,7 +75,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       if (loginResponse && loginResponse.user && loginResponse.user.id) {
         // Get transactions from Nessie - using a fixed account ID for now
         // In production, you would use the user's actual account ID
-        const transactions = await getTransactions("66ef229b9683f20dd518a02a");
+        // const transactions = await getTransactions("66ef229b9683f20dd518a02a"); TEMPORARILY REMOVING THIS SINCE NESSIE MATCHING USER ID IS NOT WORKING
         
         if (transactions.length > 0) {
           // Post transactions to your backend and link them to the user
