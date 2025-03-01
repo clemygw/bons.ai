@@ -1,10 +1,17 @@
+// import express from 'express';
+// const cors = require('cors');
+// import mongoose from 'mongoose';
+// import dotenv from 'dotenv';
+//import nessieRoutes from './routes/nessie.routes.js';
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+
 require('dotenv').config();
 const userRoutes = require('./routes/User.route');
 const transactionRoutes = require('./routes/transaction.route');
 const companyRoutes = require('./routes/company.route');
+const nessieRoutes = require('./routes/nessie.routes');
 const app = express();
 
 // Middleware
@@ -24,9 +31,12 @@ app.get('/', (req, res) => {
 
 // Routes will go here
 // app.use('/api/your-route', yourRouteHandler);
+
+app.use('/api/nessie', nessieRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/companies', companyRoutes);
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -35,7 +45,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 }); 
