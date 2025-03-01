@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
       <DevSidebar />
       <div className="flex-1 ml-16"> {/* Sidebar width */}
         <TopBar companyName={company?.name} />
-        <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
+        <div className="page-container">
           {children}
         </div>
       </div>
