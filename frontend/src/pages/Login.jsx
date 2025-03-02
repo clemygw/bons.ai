@@ -4,7 +4,9 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import LoginForm from "../components/LoginForm"
-// import BonsaiLogo from "../assets/bonsai-logo"
+import BonsaiLogo from "../assets/finallogobos.png"
+
+
 // import bonsaiLogo from "../assets/bonsai_logo_no_red.png" // Import the new logo
 // import { Leaf } from "lucide-react" // No longer needed
  
@@ -176,14 +178,19 @@ const Login = () => {
             transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
           >
             <motion.div 
-              className="w-24 h-24 bg-gradient-to-br from-teal-500 to-red-500 rounded-full p-4 flex items-center justify-center"
+              className="w-48 h-48 rounded-full overflow-hidden border-4 border-teal-500 shadow-lg flex items-center justify-center"
               whileHover={{ scale: 1.05, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
               <img 
-                src="/leaf.svg" 
+                src={BonsaiLogo} 
                 alt="Bons.ai Logo" 
-                className="w-[88px] h-[88px] text-white"
+                className="w-[175%] h-[175%] object-cover"
+                style={{ 
+                  margin: '-37.5%', 
+                  objectPosition: 'center 20%',
+                  transform: 'translateY(10%)' 
+                }}
               />
             </motion.div>
           </motion.div>
