@@ -162,10 +162,10 @@ export default function Dashboard() {
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+        <div className="flex justify-between items-center py-8 mt-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Carbon Impact Dashboard
-          </h1>
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
