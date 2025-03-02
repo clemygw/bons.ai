@@ -136,7 +136,7 @@ export default function Garden() {
   }
   
   {/* Calculate number of trees based on carbonSaved */}
-  const treeCount = Math.max(1, Math.floor(carbonSaved / 10))
+  const treeCount = Math.max(1, Math.floor(carbonSaved / 25))
   const treePositions = useMemo(() => {
     const positions = [];
   
@@ -152,8 +152,8 @@ export default function Garden() {
         xPos = (Math.random() - 0.5) * 1200; // Range: -150 to 150
       }
       xPos = (Math.random() - 0.5) * maxrange;
-      let miny = -150
-      let yPos = Math.random() *(-Math.abs(0.00026 * xPos * xPos)-miny) +miny;  // Slight vertical variation for realism
+      let miny = -140
+      let yPos = Math.random() *(-Math.abs(0.00023 * xPos * xPos)-miny) +(miny+60);  // Slight vertical variation for realism
   
       positions.push({ x: xPos, y: yPos });
     }
@@ -186,13 +186,17 @@ export default function Garden() {
                   className="w-[400px] mt-8 mb-16"
                   initial={{ y: 50, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
+                  transition={{ duration: animationDuration, delay: 0.2 }}
                 >
-                  <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-12 flex items-center justify-center">
+                  <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-20 flex items-center justify-center">
                     <div className="text-center">
                       <div>
                         <span className="text-lg font-bold text-primary">
                           {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
+                          <br /> {/* New Line */}
+                        </span>
+                        <span className="text-md font-bold text-teal-600">
+                          {treeCount} Trees Saved!
                         </span>
                       </div>
                       <div className="text-xs text-gray-500">
@@ -215,12 +219,20 @@ export default function Garden() {
                       style={{
                         left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
                         bottom: `${pos.y}px`, // Slight height variation
+                        // zIndex: treeCount - index,
                       }}
                     >
-                      <div className="w-12 h-12 bg-green-500 rounded-full -mt-6 shadow-md" />
-                      <div className="w-4 h-16 bg-amber-800" />
+                      {/* Trunk */}
+                      <div className="w-4 h-16 bg-amber-800 shadow-xl" style={{ zIndex: treeCount-index} }/>
+
+                      {/* Foliage Layers */}
+                      <div className="w-12 h-12 bg-green-800 rounded-full -mt-14 shadow-xl" style={{ zIndex: (2*treeCount)-index}}/>
+                      <div className="w-10 h-10 bg-green-700 rounded-full -mt-14 shadow-xl"style={{ zIndex: (3*treeCount)-index}} />
+                      <div className="w-8 h-8 bg-green-600 rounded-full -mt-14 shadow-xl" style={{ zIndex: (4*treeCount)-index}}/>
+                      <div className="w-6 h-6 bg-green-500 rounded-full -mt-12 shadow-xl" style={{ zIndex:(5*treeCount)-index}}/>
                     </motion.div>
-                  ))}</div>
+                  ))}
+                </div>
                 {/* Hill/Ground */}
                 <motion.div
                   className="w-full h-48 bg-primary rounded-t-full mb-16" 
@@ -230,7 +242,7 @@ export default function Garden() {
                   style={{ borderRadius: '100% 100% 0 0' }}
                 />
                 {/* Unrecorded Transactions - Bottom section */}
-                <div className="w-full max-w-2xl px-4">
+                <div className="w-full max-w-2xl px-4 text-center">
                   <Card className="bg-white/80 backdrop-blur-sm">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">
                       Unrecorded Transactions
