@@ -64,7 +64,7 @@ router.get('/user-insights/:userId', async (req, res) => {
           Answer in this format:
           💵 <b> Spending Patterns: </b> {1-2 sentences}
           🌳 <b> Environmental Impact: </b> {1-2 sentences}
-          🔍 <b> Recommendations: </b> {1-3 sentences}
+          🔍 <b> Recommendations: </b> {1-2 sentences}
           📈 <b> Trends/Concerns: </b> {1 sentence}`
         }
       ],
