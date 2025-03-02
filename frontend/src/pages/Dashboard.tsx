@@ -8,7 +8,7 @@ import { useCompany } from "../context/CompanyContext"
 import Card from "../components/Card"
 import Button from "../components/Button"
 import Modal from "../components/Modal"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import TopBar from "../components/TopBar"
 import DevSidebar from "../components/DevSidebar"
 
@@ -30,6 +30,7 @@ export default function Dashboard() {
   const { company } = useCompany()
   const [insights, setInsights] = useState<{ insights: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([])
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -151,6 +152,14 @@ export default function Dashboard() {
     setSelectedTransaction(null)
   }
 
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
   return (
     <div className="flex">
       <DevSidebar />
@@ -195,7 +204,7 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    {/* Category Emissions - Sorted by size */}
+                    {/* Category Emissions - Now with dropdowns */}
                     <div className="space-y-6">
                       {categoryEmissions.map((category, index) => (
                         <motion.div
@@ -205,12 +214,38 @@ export default function Dashboard() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
-                          <div className="flex justify-between text-sm">
-                            <span>{category.name}</span>
-                            <span>
-                              {category.emissions.toFixed(2)} kg CO₂ ({category.percentage}%)
-                            </span>
-                          </div>
+                          <button 
+                            onClick={() => toggleCategory(category.name)}
+                            className="w-full"
+                          >
+                            <div className="flex justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <span>{category.name}</span>
+                                <motion.div
+                                  animate={{ rotate: expandedCategories.includes(category.name) ? 180 : 0 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <svg
+                                    className="w-4 h-4 text-gray-500"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M19 9l-7 7-7-7"
+                                    />
+                                  </svg>
+                                </motion.div>
+                              </div>
+                              <span>
+                                {category.emissions.toFixed(2)} kg CO₂ ({category.percentage}%)
+                              </span>
+                            </div>
+                          </button>
+                          
                           <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                             <motion.div
                               className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
@@ -219,6 +254,48 @@ export default function Dashboard() {
                               transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
                             />
                           </div>
+
+                          <AnimatePresence>
+                            {expandedCategories.includes(category.name) && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="mt-4 space-y-2">
+                                  {transactions
+                                    .filter(t => t.category.toLowerCase() === category.name.toLowerCase())
+                                    .map((transaction) => (
+                                      <div
+                                        key={transaction._id}
+                                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                      >
+                                        <div className="flex justify-between items-center">
+                                          <div>
+                                            <p className="font-medium text-gray-900">
+                                              {transaction.merchant}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                              {new Date(transaction.date).toLocaleDateString()}
+                                            </p>
+                                          </div>
+                                          <div className="text-right">
+                                            <p className="font-medium text-gray-900">
+                                              ${transaction.amount.toFixed(2)}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                              {transaction.co2Emissions.toFixed(2)} kg CO₂
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </motion.div>
                       ))}
                     </div>
