@@ -357,10 +357,18 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </motion.div>
+              </div>
 
-                {/* Generate Spending Insights Button */}
+              {/* Transactions List (1/3) */}
+              <motion.div
+                className="col-span-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Generate Spending Insights Button - Moved here */}
                 <motion.button
-                  className="mt-6 bg-primary text-primary-foreground rounded-full px-4 py-2 flex items-center"
+                  className="w-full mb-4 bg-primary text-primary-foreground rounded-lg px-6 py-3 flex items-center justify-center h-14 font-medium"
                   whileHover={{ scale: 1.02, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)" }}
                   transition={{ type: "spring", stiffness: 300 }}
                   onClick={async () => {
@@ -398,15 +406,7 @@ export default function Dashboard() {
                   )}
                   Generate Spending Insights
                 </motion.button>
-              </div>
 
-              {/* Transactions List (1/3) */}
-              <motion.div
-                className="col-span-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold mb-6 text-gray-900">
                     Receipted Transactions ({receiptedTransactions.length})
