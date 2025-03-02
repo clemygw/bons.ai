@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
 @layer base {
   :root {
     --background: 100 0% 100%;
@@ -73,34 +72,3 @@
   }
 }
 
-=======
-@layer components {
-  .card {
-    @apply bg-white rounded-xl shadow-sm p-6;
-  }
-  
-  .card-title {
-    @apply text-xl font-semibold mb-6;
-  }
-  
-  .btn-primary {
-    @apply px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors;
-  }
-  
-  .btn-secondary {
-    @apply px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors;
-  }
-  
-  .modal-overlay {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50;
-  }
-  
-  .modal-content {
-    @apply bg-white rounded-lg p-6 max-w-md w-full;
-  }
-  
-  .page-container {
-    @apply min-h-[calc(100vh-4rem)] bg-gray-50 p-8;
-  }
-} 
->>>>>>> b4a789009a7ac86e055a2f5c3cefe2f1941c7ed8

@@ -15,7 +15,6 @@ export default function Layout() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50/50 via-sky-50/50 to-emerald-50/50">
       <div className="noise" />
       <DevSidebar />
-<<<<<<< HEAD
       <div className="flex-1 ml-16">
         <TopBar />
         <motion.main
@@ -27,13 +26,6 @@ export default function Layout() {
         >
           <Outlet />
         </motion.main>
-=======
-      <div className="flex-1 ml-16"> {/* Sidebar width */}
-        <TopBar companyName={company?.name} />
-        <div className="page-container">
-          {children}
-        </div>
->>>>>>> b4a789009a7ac86e055a2f5c3cefe2f1941c7ed8
       </div>
     </div>
   )
