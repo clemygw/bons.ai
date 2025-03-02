@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard"
 import Leaderboard from "./pages/Leaderboard"
 import CameraCapture from './components/CameraCapture'
 import Garden from "./pages/Garden"
+import Layout from "./components/Layout"
 import { AuthProvider } from './context/AuthContext'
 import { CompanyProvider } from './context/CompanyContext'
 import { UserProvider } from "./context/UserContext"
@@ -33,32 +34,34 @@ function App() {
         <CompanyProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/garden"
-              element={
-                <ProtectedRoute>
-                  <Garden />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/leaderboard"
-              element={
-                <ProtectedRoute>
-                  <Leaderboard />
-                </ProtectedRoute>
-              }
-            />
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/upload-receipt" element={<CameraCapture />} />
+            <Route element={<Layout />}>
+              <Route
+                path="/garden"
+                element={
+                  <ProtectedRoute>
+                    <Garden />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaderboard"
+                element={
+                  <ProtectedRoute>
+                    <Leaderboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
             <Route path="/ar" element={<ARTree/>}/>
           </Routes>
         </CompanyProvider>
