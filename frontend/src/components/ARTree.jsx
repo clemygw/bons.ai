@@ -132,21 +132,21 @@ const ARTree = () => {
       foliage1.setAttribute('radius-bottom', '1.2');
       foliage1.setAttribute('radius-top', '0.2');
       foliage1.setAttribute('height', '1.8');
-      foliage1.setAttribute('color', '#228B22');
+      foliage1.setAttribute('color', '#006400');
       
       const foliage2 = document.createElement('a-cone');
       foliage2.setAttribute('position', '0 1 0');
       foliage2.setAttribute('radius-bottom', '1.0');
       foliage2.setAttribute('radius-top', '0.2');
       foliage2.setAttribute('height', '1.5');
-      foliage2.setAttribute('color', '#32CD32');
+      foliage2.setAttribute('color', '#228B22');
       
       const foliage3 = document.createElement('a-cone');
       foliage3.setAttribute('position', '0 2 0');
       foliage3.setAttribute('radius-bottom', '0.8');
       foliage3.setAttribute('radius-top', '0.1');
       foliage3.setAttribute('height', '1.2');
-      foliage3.setAttribute('color', '#006400');
+      foliage3.setAttribute('color', '#32CD32');
       
       const ground = document.createElement('a-circle');
       ground.setAttribute('position', '0 -1.7 0');
