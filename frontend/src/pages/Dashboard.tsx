@@ -326,9 +326,6 @@ export default function Dashboard() {
                           className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gradient-to-br from-teal-500/10 to-emerald-500/10 rounded-full">
-                              <Camera className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-                            </div>
                             <div className="text-left">
                               <p className="font-medium">{transaction.merchant}</p>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
