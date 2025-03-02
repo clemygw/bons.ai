@@ -171,7 +171,7 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Carbon Impact Dashboard
               </h1>
             </div>
@@ -196,7 +196,7 @@ export default function Dashboard() {
                       </div>
                       <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                          className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 1, ease: "easeOut" }}
@@ -248,7 +248,7 @@ export default function Dashboard() {
                           
                           <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                             <motion.div
-                              className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                              className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${category.percentage}%` }}
                               transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
@@ -320,7 +320,7 @@ export default function Dashboard() {
                       </div>
                       <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                          className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 1, ease: "easeOut" }}
@@ -346,7 +346,7 @@ export default function Dashboard() {
                           </div>
                           <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                             <motion.div
-                              className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                              className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${category.percentage}%` }}
                               transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
@@ -360,7 +360,7 @@ export default function Dashboard() {
 
                 {/* Generate Spending Insights Button */}
                 <motion.button
-                  className="mt-6 bg-teal-600 text-white rounded-full px-4 py-2 flex items-center"
+                  className="mt-6 bg-primary text-primary-foreground rounded-full px-4 py-2 flex items-center"
                   whileHover={{ scale: 1.02, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)" }}
                   transition={{ type: "spring", stiffness: 300 }}
                   onClick={async () => {
@@ -463,7 +463,7 @@ export default function Dashboard() {
             {/* Transaction Details Modal */}
             <Modal isOpen={!!selectedTransaction} onClose={handleCloseModal}>
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                <h2 className="text-xl font-semibold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Transaction Details
                 </h2>
 

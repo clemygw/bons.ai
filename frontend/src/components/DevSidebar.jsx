@@ -71,7 +71,7 @@ export default function DevSidebar() {
                     w-full h-10 flex items-center gap-3 px-3 rounded-lg transition-all
                     ${
                       isActive
-                        ? "bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-sm"
+                        ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm"
                         : "text-gray-600 hover:bg-gray-50"
                     }
                   `}

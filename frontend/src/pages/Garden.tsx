@@ -173,13 +173,13 @@ export default function Garden() {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Carbon Garden
               </h1>
             </div>
 
             {/* Main Garden Area */}
-            <div className="bg-gradient-to-b from-sky-100/50 via-teal-50/50 to-emerald-100/50 rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-gradient-to-b from-accent/50 via-accent/30 to-accent/50 rounded-xl shadow-sm overflow-hidden">
               <div className="relative h-[800px] flex flex-col items-center py-12">
                 {/* Carbon Saved Bar - Top section */}
                 <motion.div
@@ -191,7 +191,7 @@ export default function Garden() {
                   <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-12 flex items-center justify-center">
                     <div className="text-center">
                       <div>
-                        <span className="text-lg font-bold text-teal-600">
+                        <span className="text-lg font-bold text-primary">
                           {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
                         </span>
                       </div>
@@ -223,7 +223,7 @@ export default function Garden() {
                   ))}</div>
                 {/* Hill/Ground */}
                 <motion.div
-                  className="w-full h-48 bg-emerald-500 rounded-t-full mb-16" 
+                  className="w-full h-48 bg-primary rounded-t-full mb-16" 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
@@ -240,14 +240,14 @@ export default function Garden() {
                         <motion.button
                           key={transaction._id}
                           onClick={() => handleTransactionClick(transaction)}
-                          className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-emerald-500/20 hover:bg-emerald-50/50 transition-all"
+                          className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:bg-accent/50 transition-all"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="p-2 bg-emerald-100 rounded-full">
-                              <Camera className="w-5 h-5 text-emerald-600" />
+                            <div className="p-2 bg-accent rounded-full">
+                              <Camera className="w-5 h-5 text-primary" />
                             </div>
                             <div className="text-left">
                               <p className="font-medium text-gray-900">{transaction.merchant}</p>
