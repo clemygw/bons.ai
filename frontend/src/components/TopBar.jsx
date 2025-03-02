@@ -48,11 +48,11 @@ export default function TopBar({ children, companyName }) {
     >
       <div className="flex items-center gap-2">
         <Link to="/garden" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-red-500 rounded-lg flex items-center justify-center shadow-sm">
-            <Leaf size={18} className="text-white" />
+          <div className="w-8 h-8 bg-gradient-to-br from-primary to-red-500 rounded-lg flex items-center justify-center shadow-sm">
+            <Leaf size={18} className="text-primary-foreground" />
           </div>
 
-          <h1 className="font-bold text-xl bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight">
+          <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
             Bons.ai
           </h1>
         </Link>
@@ -68,7 +68,7 @@ export default function TopBar({ children, companyName }) {
         </motion.button>
         <div className="relative" ref={profileMenuRef}>
           <motion.button
-            className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-lg"
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -95,7 +95,7 @@ export default function TopBar({ children, companyName }) {
                 </button>
                 <div className="border-t border-gray-100 my-1"></div>
                 <button 
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 text-destructive hover:bg-gray-50 flex items-center gap-2"
                   onClick={handleSignOut}
                 >
                   <LogOut size={16} />

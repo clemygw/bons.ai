@@ -7,8 +7,8 @@ export default function Card({ children, className = "", hover = true }) {
     <motion.div
       whileHover={hover ? { y: -5 } : {}}
       className={`
-        glass border border-white/20 rounded-2xl shadow-xl 
-        dark:border-gray-800/50
+        bg-card border border-border rounded-2xl shadow-xl 
+        dark:border-border/50
         ${className}
       `}
     >

@@ -70,7 +70,7 @@ const Leaderboard = () => {
         <div className="flex-1">
           <TopBar companyName={company?.name} />
           <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         </div>
       </div>
@@ -113,14 +113,14 @@ const Leaderboard = () => {
         <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent ml-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent ml-2">
                 {leaderboardData?.companyName} Leaderboard
               </h1>
               
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="1m">Last Month</option>
                 <option value="3m">Last 3 Months</option>
@@ -135,7 +135,7 @@ const Leaderboard = () => {
                 <h3 className="text-sm font-medium text-gray-600">
                   Total Emissions Reduced ({timeRangeLabels[timeRange]})
                 </h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <p className="text-3xl font-bold text-primary">
                   {Math.round(leaderboardData.companyStats.totalEmissionsReduced).toLocaleString()} kg
                 </p>
               </div>
@@ -144,14 +144,14 @@ const Leaderboard = () => {
                 <h3 className="text-sm font-medium text-gray-600">
                   Average Per User ({timeRangeLabels[timeRange]})
                 </h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <p className="text-3xl font-bold text-primary">
                   {Math.round(leaderboardData.companyStats.averageReductionPerUser).toLocaleString()} kg
                 </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h3 className="text-sm font-medium text-gray-600">Top Performer</h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <p className="text-3xl font-bold text-primary">
                   {leaderboardData.companyStats.topPerformer}
                 </p>
               </div>
