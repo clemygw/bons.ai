@@ -134,7 +134,7 @@ const companyController = {
         const totalSpending = user.transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
         const actualEmissions = user.transactions.reduce((sum, t) => sum + (t.co2Emissions || 0), 0);
         const expectedEmissions = totalSpending * CO2_PER_DOLLAR;
-        const emissionsReduced = Math.max(0, expectedEmissions - actualEmissions);
+        const emissionsReduced = expectedEmissions - actualEmissions;
         const percentageReduced = expectedEmissions > 0 
           ? ((emissionsReduced / expectedEmissions) * 100).toFixed(1)
           : "0.0";

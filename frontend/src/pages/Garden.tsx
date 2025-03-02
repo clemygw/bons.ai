@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Camera } from "../components/Icons"
+import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
 import { useAuth } from "../context/AuthContext"
 import { motion, AnimatePresence } from "framer-motion"
@@ -26,31 +27,54 @@ const CO2_PER_DOLLAR = 3.7  // Average US CO2 emissions per dollar spent
 export default function Garden() {
   const { company } = useCompany()
   const { user } = useAuth()
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
+  const [unprocessedTransactions, setUnprocessedTransactions] = useState<Transaction[]>([])
   const [showCamera, setShowCamera] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
 
-  // Calculate carbon saved based on spending vs actual emissions
+  // Calculate carbon saved based on spending vs actual emissions - EXACTLY like company controller
   const carbonSaved = useMemo(() => {
     // Filter transactions for the last month
     const now = new Date()
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
-    const monthlyTransactions = transactions.filter(t => {
+    const monthlyTransactions = allTransactions.filter(t => {
       const transactionDate = new Date(t.date)
       return transactionDate >= lastMonth && transactionDate <= now
     })
 
-    return monthlyTransactions.reduce((totalSaved, transaction) => {
-      // Calculate expected emissions based on amount spent
-      const expectedEmissions = transaction.amount * CO2_PER_DOLLAR
-      
-      // Calculate how much carbon was saved (expected - actual)
-      const savedEmissions = expectedEmissions - transaction.co2Emissions
+    console.log('Monthly transactions count:', monthlyTransactions.length)
+    console.log('Monthly transactions details:', monthlyTransactions.map(t => ({
+      id: t._id,
+      date: new Date(t.date).toLocaleDateString(),
+      amount: t.amount,
+      co2Emissions: t.co2Emissions,
+      merchant: t.merchant
+    })))
 
-      // Only count positive savings
-      return totalSaved + Math.max(0, savedEmissions)
+    // Calculate total spending and actual emissions
+    const totalSpending = monthlyTransactions.reduce((sum, t) => sum + (t.amount || 0), 0)
+    const actualEmissions = monthlyTransactions.reduce((sum, t) => {
+      console.log(`Transaction ${t._id} CO2: ${t.co2Emissions || 0}kg`)
+      return sum + (t.co2Emissions || 0)
     }, 0)
-  }, [transactions])
+    
+    // Calculate expected emissions based on total spending - MATCH COMPANY CONTROLLER
+    const expectedEmissions = totalSpending * CO2_PER_DOLLAR
+    
+    console.log('Carbon calculation details:', {
+      totalSpending,
+      actualEmissions,
+      expectedEmissions,
+      monthlyTransactionsCount: monthlyTransactions.length,
+      CO2_PER_DOLLAR
+    })
+    
+    // Calculate emissions reduced (expected - actual) - MATCH COMPANY CONTROLLER
+    const emissionsReduced = expectedEmissions - actualEmissions
+
+    // Only return positive savings
+    return Math.max(0, emissionsReduced)
+  }, [allTransactions])
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -61,16 +85,30 @@ export default function Garden() {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           const data = await response.json()
-          // Filter for transactions without receipts
-          const unprocessedTransactions = data.filter(
+          
+          // Log all transactions' CO2 emissions
+          console.log('All transactions CO2 emissions:', data.map(t => ({
+            id: t._id,
+            date: new Date(t.date).toLocaleDateString(),
+            amount: t.amount,
+            co2Emissions: t.co2Emissions,
+            merchant: t.merchant
+          })))
+          
+          // Store all transactions for carbon calculations
+          setAllTransactions(data)
+          
+          // Filter for unprocessed transactions for the UI
+          const unprocessed = data.filter(
             (t: Transaction) => !t.receiptUploaded
           ).sort((a: Transaction, b: Transaction) => 
             new Date(b.date).getTime() - new Date(a.date).getTime()
           )
-          setTransactions(unprocessedTransactions)
+          setUnprocessedTransactions(unprocessed)
         } catch (error) {
           console.error("Error fetching transactions:", error)
-          setTransactions([])
+          setAllTransactions([])
+          setUnprocessedTransactions([])
         }
       }
     }
@@ -84,43 +122,42 @@ export default function Garden() {
   }
 
   const handleCloseCamera = async (uploaded: boolean = false) => {
-    // Only update transactions if explicitly uploaded
     if (uploaded && selectedTransaction?._id) {
-      setTransactions(transactions.filter((t) => t._id !== selectedTransaction._id))
+      // Update both transaction lists
+      setUnprocessedTransactions(prev => prev.filter(t => t._id !== selectedTransaction._id))
+      setAllTransactions(prev => prev.map(t => 
+        t._id === selectedTransaction._id 
+          ? { ...t, receiptUploaded: true }
+          : t
+      ))
     }
     setShowCamera(false)
     setSelectedTransaction(null)
   }
-
-  // Calculate number of trees based on carbonSaved
+  
+  {/* Calculate number of trees based on carbonSaved */}
   const treeCount = Math.max(1, Math.floor(carbonSaved / 10))
   const treePositions = useMemo(() => {
     const positions = [];
   
     for (let i = 0; i < treeCount; i++) {
       let xPos;
-      let maxrange = 1200
   
       if (i === 0) {
         // Ensure the first tree is in the center
         xPos = 0;
       } else {
         // Generate random X positions within a reasonable range
-        xPos = (Math.random() - 0.5) * maxrange;
+        xPos = (Math.random() - 0.5) * 1200; // Range: -150 to 150
       }
-
-      let miny = -150
-      let yPos = Math.random() *(-Math.abs(0.00026 * xPos * xPos)-miny) +miny;  // Slight vertical variation for realism
+  
+      let yPos = -Math.abs(0.00028 * xPos * xPos);  // Slight vertical variation for realism
   
       positions.push({ x: xPos, y: yPos });
     }
   
     return positions;
   }, [treeCount]);
-
-  // Calculate animation duration based on the number of trees
-  const animationDuration = Math.min(0.5, 1/(treeCount /30+1)); // Adjust the divisor to control speed
-
   return (
     <div className="flex">
       <DevSidebar />
@@ -159,27 +196,25 @@ export default function Garden() {
                   </div>
                 </motion.div>
 
+
                 {/* Render trees dynamically on top of the hill */}
                 <div className="relative w-full h-48">
                   {treePositions.map((pos, index) => (
                     <motion.div
                       key={index}
                       className="absolute flex flex-col items-center"
-                      initial={{ opacity: 0, y: -20 }}
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: animationDuration, delay: index * 0.1 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
                       style={{
                         left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
                         bottom: `${pos.y}px`, // Slight height variation
-                        zIndex: treeCount + index // Ensure new trees are in front
                       }}
                     >
                       <div className="w-12 h-12 bg-green-500 rounded-full -mt-6 shadow-md" />
                       <div className="w-4 h-16 bg-amber-800" />
                     </motion.div>
-                  ))}
-                </div>
-
+                  ))}</div>
                 {/* Hill/Ground */}
                 <motion.div
                   className="w-full h-48 bg-emerald-500 rounded-t-full mb-16" 
@@ -188,7 +223,6 @@ export default function Garden() {
                   transition={{ duration: 0.5, ease: "easeOut" }}
                   style={{ borderRadius: '100% 100% 0 0' }}
                 />
-                
                 {/* Unrecorded Transactions - Bottom section */}
                 <div className="w-full max-w-2xl px-4">
                   <Card className="bg-white/80 backdrop-blur-sm">
@@ -196,7 +230,7 @@ export default function Garden() {
                       Unrecorded Transactions
                     </h3>
                     <div className="space-y-3">
-                      {transactions.map((transaction, index) => (
+                      {unprocessedTransactions.map((transaction, index) => (
                         <motion.button
                           key={transaction._id}
                           onClick={() => handleTransactionClick(transaction)}
@@ -222,6 +256,8 @@ export default function Garden() {
                 </div>
               </div>
             </div>
+
+          
           </div>
         </div>
       </div>

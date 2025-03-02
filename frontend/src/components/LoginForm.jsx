@@ -37,14 +37,16 @@ async function postTransactions(userId, transactions) {
     const promises = transactions.map(transaction => {
       const formattedTransaction = {
         amount: transaction.amount,
-        date: new Date(transaction.transaction_date),
+        date: new Date(new Date().setHours(0, 0, 0, 0)),
         description: transaction.description || 'Nessie Transaction',
         type: transaction.type || 'transfer',
         user: userId,
-        category: "dining",
+        category: "grocery",
         merchant: "Walmart"
         // Add any other fields your Transaction model requires
       };
+      
+      console.log('Transaction date:', formattedTransaction.date.toISOString());  // This will show the exact date being used
       
       return axios.post(`${import.meta.env.VITE_API_URL}/api/transactions/user/${userId}`, formattedTransaction);
     });
@@ -75,7 +77,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       if (loginResponse && loginResponse.user && loginResponse.user.id) {
         // Get transactions from Nessie - using a fixed account ID for now
         // In production, you would use the user's actual account ID
-        // const transactions = await getTransactions("66ef229b9683f20dd518a02a"); TEMPORARILY REMOVING THIS SINCE NESSIE MATCHING USER ID IS NOT WORKING
+        const transactions = await getTransactions("66ef229b9683f20dd518a02a"); //TEMPORARILY REMOVING THIS SINCE NESSIE MATCHING USER ID IS NOT WORKING
         
         if (transactions.length > 0) {
           // Post transactions to your backend and link them to the user
