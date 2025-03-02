@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 export default function Modal({ isOpen, onClose, children }) {
   return (
+<<<<<<< HEAD
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -25,6 +26,13 @@ export default function Modal({ isOpen, onClose, children }) {
         </motion.div>
       )}
     </AnimatePresence>
+=======
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        {children}
+      </div>
+    </div>
+>>>>>>> b4a789009a7ac86e055a2f5c3cefe2f1941c7ed8
   )
 }
 

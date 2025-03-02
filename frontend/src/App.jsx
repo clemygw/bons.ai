@@ -9,6 +9,8 @@ import Layout from "./components/Layout"
 import { AuthProvider } from './context/AuthContext'
 import { CompanyProvider } from './context/CompanyContext'
 import { UserProvider } from "./context/UserContext"
+import './styles/index.css'
+import './styles/tailwind.css'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()

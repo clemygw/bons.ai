@@ -6,18 +6,26 @@ import { Home, BarChart2, Camera, LogOut, Users } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
 
-export default function DevSidebar() {
-  const location = useLocation()
-  const { logout } = useAuth()
-  const [isHovered, setIsHovered] = useState(false)
 
-  const pulseVariant = {
-    hover: {
-      scale: [1, 1.2, 1],
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
+const DevSidebar = () => {
+  const { logout } = useUser()
+  const navigate = useNavigate()
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed')
+    return saved ? JSON.parse(saved) : true
+  })
+  const [isHovering, setIsHovering] = useState(false)
+
+  useEffect(() => {
+    let timeout
+    if (isHovering) {
+      setIsCollapsed(false)
+      localStorage.setItem('sidebarCollapsed', 'false')
+    } else {
+      timeout = setTimeout(() => {
+        setIsCollapsed(true)
+        localStorage.setItem('sidebarCollapsed', 'true')
+      }, 300)
     }
   }
 
