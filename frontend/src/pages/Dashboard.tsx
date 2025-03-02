@@ -357,47 +357,6 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </motion.div>
-
-                {/* Generate Spending Insights Button */}
-                <motion.button
-                  className="mt-6 bg-teal-600 text-white rounded-full px-4 py-2 flex items-center"
-                  whileHover={{ scale: 1.02, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)" }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  onClick={async () => {
-                    if (user) {
-                      setLoading(true)
-                      try {
-                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/insights/user-insights/${user.id}`)
-                        if (!response.ok) {
-                          throw new Error(`HTTP error! status: ${response.status}`)
-                        }
-                        const insights = await response.json()
-                        console.log('Insights:', insights)
-                        setInsights(insights)
-                      } catch (error) {
-                        console.error('Error generating insights:', error)
-                      } finally {
-                        setLoading(false)
-                      }
-                    }
-                  }}
-                >
-                  {loading && (
-                    <motion.div
-                      className="mr-2"
-                      style={{
-                        border: '2px solid transparent',
-                        borderTop: '3px solid #bbbbbb',
-                        borderRadius: '50%',
-                        width: '16px',
-                        height: '16px',
-                      }}
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-                    />
-                  )}
-                  Generate Spending Insights
-                </motion.button>
               </div>
 
               {/* Transactions List (1/3) */}
@@ -408,9 +367,51 @@ export default function Dashboard() {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="p-6">
-                  <h2 className="text-xl font-semibold mb-6 text-gray-900">
-                    Receipted Transactions ({receiptedTransactions.length})
-                  </h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold mb-6 text-gray-900">
+                      Receipted Transactions ({receiptedTransactions.length})
+                    </h2>
+                    {/* Generate Spending Insights Button - Moved inside the receipted transactions box */}
+                    <motion.button
+                      className="bg-teal-600 text-white rounded-full px-4 py-2 flex items-center"
+                      whileHover={{ scale: 1.02, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)" }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                      onClick={async () => {
+                        if (user) {
+                          setLoading(true)
+                          try {
+                            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/insights/user-insights/${user.id}`)
+                            if (!response.ok) {
+                              throw new Error(`HTTP error! status: ${response.status}`)
+                            }
+                            const insights = await response.json()
+                            console.log('Insights:', insights)
+                            setInsights(insights)
+                          } catch (error) {
+                            console.error('Error generating insights:', error)
+                          } finally {
+                            setLoading(false)
+                          }
+                        }
+                      }}
+                    >
+                      {loading && (
+                        <motion.div
+                          className="mr-2"
+                          style={{
+                            border: '2px solid transparent',
+                            borderTop: '3px solid #bbbbbb',
+                            borderRadius: '50%',
+                            width: '16px',
+                            height: '16px',
+                          }}
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                        />
+                      )}
+                      Generate Spending Insights
+                    </motion.button>
+                  </div>
                   <div className="space-y-4">
                     {receiptedTransactions.length > 0 ? (
                       receiptedTransactions.map((transaction, index) => (
