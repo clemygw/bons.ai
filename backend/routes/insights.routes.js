@@ -36,6 +36,7 @@ router.get('/user-insights/:userId', async (req, res) => {
       amount: t.amount,
       date: t.date,
       category: t.category,
+      items: t.items,
       co2Emissions: t.co2Emissions
     }));
 
@@ -50,7 +51,7 @@ router.get('/user-insights/:userId', async (req, res) => {
         },
         {
           role: "user",
-          content: `Here are my transactions from the last month: ${JSON.stringify(safeTransactions)}. 
+          content: `Here are my transactions from the last month: ${JSON.stringify(safeTransactions)}. Emphasize personalized insights for the items within the trasactions.
           Please provide:
           1. Key spending patterns
           2. Environmental impact insights
@@ -61,10 +62,10 @@ router.get('/user-insights/:userId', async (req, res) => {
           Emphasize the importance of cost-effectiveness first, then environmental impact.
           
           Answer in this format:
-          Spending Patterns: {1-2 sentences}
-          Environmental Impact: {1-2 sentences}
-          Recommendations: {1-3 sentences}
-          Trends/Concerns: {1 sentence}`
+          💵 <b> Spending Patterns: </b> {1-2 sentences}
+          🌳 <b> Environmental Impact: </b> {1-2 sentences}
+          🔍 <b> Recommendations: </b> {1-3 sentences}
+          📈 <b> Trends/Concerns: </b> {1 sentence}`
         }
       ],
       temperature: 0.7,
