@@ -502,7 +502,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
+                className="space-y-4 max-w-2xl w-full"
               >
                 <h2 className="text-xl font-semibold mb-4">Spending Insights</h2>
                 <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: insights?.insights || '' }} />
