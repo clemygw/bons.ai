@@ -3,11 +3,14 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Bell, User, Settings, LogOut, Leaf } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 export default function TopBar({ children, companyName }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const profileMenuRef = useRef(null)
+  const { logout } = useAuth()
+  const navigate = useNavigate()
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -24,10 +27,9 @@ export default function TopBar({ children, companyName }) {
   }, [])
 
   const handleSignOut = () => {
-    // Add sign out logic here
-    console.log("Signing out...")
-    // Example: auth.signOut()
+    logout()
     setShowProfileMenu(false)
+    navigate("/login")
   }
 
   const handleAccountSettings = () => {
