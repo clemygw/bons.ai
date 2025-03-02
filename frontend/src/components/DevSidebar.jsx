@@ -80,10 +80,11 @@ export default function DevSidebar() {
   return (
     <>
       {/* Spacer div to prevent content overlap */}
-      <div className="w-16 flex-shrink-0" />
+
       
       <motion.div 
-        className="fixed left-0 top-0 bottom-0 bg-gradient-to-b from-white to-gray-50 border-r border-gray-100 flex flex-col items-start py-6 shadow-md z-50 overflow-hidden"
+        className="fixed left-0 top-0 bottom-0 bg-transparent flex flex-col items-start py-6 z-50"
+
         initial={{ width: "4rem" }}
         animate={{ width: isHovered ? "12rem" : "4rem" }}
         onMouseEnter={() => setIsHovered(true)}
@@ -94,36 +95,7 @@ export default function DevSidebar() {
           WebkitBackdropFilter: "blur(8px)"
         }}
       >
-        <div className="w-12 h-6 pl-5 flex items-center">
-          <div className="flex flex-col gap-1.5 items-start justify-center">
-            {/* Animated hamburger menu */}
-            <motion.div
-              className="h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full origin-left"
-              variants={topBarVariants}
-              animate={isHovered ? "open" : "closed"}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full origin-left"
-              variants={middleBarVariants}
-              animate={isHovered ? "open" : "closed"}
-              transition={{ duration: 0.3, ease: "easeInOut", delay: 0.05 }}
-            />
-            <motion.div
-              className="h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full origin-left"
-              variants={bottomBarVariants}
-              animate={isHovered ? "open" : "closed"}
-              transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 }}
-            />
-          </div>
-        </div>
-
-        <motion.nav 
-          className="flex-1 flex flex-col items-start gap-2 w-full mt-12 overflow-hidden"
-          variants={sidebarAnimation}
-          animate={isHovered ? "open" : "closed"}
-          initial="closed"
-        >
+        <nav className="flex-1 flex flex-col items-start gap-2 w-full mt-14">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path
             const Icon = item.icon

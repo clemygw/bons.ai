@@ -41,7 +41,7 @@ export default function TopBar({ children, companyName }) {
 
   return (
     <motion.div 
-      className="fixed top-0 right-0 left-16 h-16 bg-white border-b z-50 flex items-center justify-between px-8"
+      className="fixed top-0 right-0 left-0 h-16 bg-white border-b z-50 flex items-center justify-between px-8"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
@@ -51,7 +51,6 @@ export default function TopBar({ children, companyName }) {
           <div className="w-8 h-8 bg-gradient-to-br from-primary to-red-500 rounded-lg flex items-center justify-center shadow-sm">
             <Leaf size={18} className="text-primary-foreground" />
           </div>
-
           <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
             bons.ai
           </h1>
@@ -68,38 +67,34 @@ export default function TopBar({ children, companyName }) {
         </motion.button>
         <div className="relative" ref={profileMenuRef}>
           <motion.button
-            className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-all"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
-            <User size={20} />
+            <User size={20} className="text-gray-600" />
           </motion.button>
-          
-          {/* Profile Dropdown Menu */}
           <AnimatePresence>
             {showProfileMenu && (
-              <motion.div 
-                className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100"
-                initial={{ opacity: 0, y: -10 }}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
               >
-                <button 
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                <button
                   onClick={handleAccountSettings}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
                   <Settings size={16} />
-                  <span>Account Settings</span>
+                  Account Settings
                 </button>
-                <div className="border-t border-gray-100 my-1"></div>
-                <button 
-                  className="w-full text-left px-4 py-2 text-destructive hover:bg-gray-50 flex items-center gap-2"
+                <button
                   onClick={handleSignOut}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
                   <LogOut size={16} />
-                  <span>Sign Out</span>
+                  Sign Out
                 </button>
               </motion.div>
             )}

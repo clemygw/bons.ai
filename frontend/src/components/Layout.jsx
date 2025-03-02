@@ -65,25 +65,17 @@ export default function Layout() {
       
       {/* Fixed navigation elements - these should never animate with page changes */}
       <DevSidebar />
-      <TopBar />
-      
-      {/* Main content area - adjusted for mobile */}
-      <div className={`${isMobile ? 'ml-0 pt-16' : 'ml-16 pt-16'}`}>
-        {/* Super simple crossfade animation */}
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="w-full"
-          >
-            <div className="page-container px-4 md:px-0">
-              <Outlet />
-            </div>
-          </motion.div>
-        </AnimatePresence>
+      <div className="flex-1">
+        <TopBar />
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="h-[calc(100vh-4rem)]"
+        >
+          <Outlet />
+        </motion.main>
       </div>
     </>
   )

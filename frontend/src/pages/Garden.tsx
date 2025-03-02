@@ -164,35 +164,44 @@ export default function Garden() {
 
   
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-white p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            Carbon Garden
-          </h1>
-        </div>
+    <div className="flex w-full h-full">
+      <DevSidebar />
+      <div className="flex-1 w-full h-full">
+        <TopBar companyName={company?.name} />
+        <div className="h-[calc(100vh-4rem)] w-full relative">
+          <div className="w-full h-full">
+            {/* Header */}
+            <div className="flex justify-between items-center py-8 mt-24">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pl-52">
+                Carbon Garden
+              </h1>
+            </div>
 
-        {/* Main Garden Area */}
-        <div className="bg-gradient-to-b from-accent/50 via-accent/30 to-accent/50 rounded-xl shadow-sm overflow-hidden">
-          <div className="relative h-[800px] flex flex-col items-center py-12">
-            {/* Carbon Saved Bar - Top section */}
-            <motion.div
-              className="w-[400px] mt-8 mb-16"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: animationDuration, delay: 0.2 }}
-            >
-              <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-20 flex items-center justify-center">
-                <div className="text-center">
-                  <div>
-                    <span className="text-lg font-bold text-primary">
-                      {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
-                      <br /> {/* New Line */}
-                    </span>
-                    <span className="text-md font-bold text-teal-600">
-                      {treeCount} Trees Saved!
-                    </span>
+            {/* Main Garden Area */}
+            <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-accent/50 via-accent/30 to-accent/50 h-[70vh]">
+              <div className="relative h-full flex flex-col items-center">
+                {/* Carbon Saved Bar - Top section */}
+                <motion.div
+                  className="w-[250px] -mt-14 mb-8"
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: animationDuration, delay: 0.2 }}
+                >
+                  <div className="bg-yellow-400 rounded-full shadow-lg h-[250px] w-[250px] flex items-center justify-center border border-yellow-200/20 backdrop-blur-sm">
+                    <div className="text-center">
+                      <div>
+                        <span className="text-2xl font-bold text-white">
+                          {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
+                          <br />
+                        </span>
+                        <span className="text-xl font-bold text-white">
+                          {treeCount} Trees Saved!
+                        </span>
+                      </div>
+                      <div className="text-lg font-semibold text-white/80">
+                        (this month)
+                      </div>
+                    </div>
                   </div>
                   <div className="text-xs text-gray-500">
                     (this month)
@@ -265,7 +274,89 @@ export default function Garden() {
                     </motion.button>
                   ))}
                 </div>
-              </Card>
+                {/* Hill/Ground */}
+                <motion.div
+                  className="w-full h-48 bg-primary rounded-t-full mb-16" 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  style={{ borderRadius: '100% 100% 0 0' }}
+                />
+
+                {/* Transaction Indicator */}
+                <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex items-center gap-2 text-gray-600 cursor-pointer"
+                    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                  >
+                    <span className="text-sm">
+                      {unprocessedTransactions.length > 0 
+                        ? `${unprocessedTransactions.length} Unrecorded Transactions`
+                        : "All Transactions Processed!"}
+                    </span>
+                    <svg className="w-8 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="absolute top-[100vh] left-0 right-0 bg-primary min-h-screen">
+              <div className="p-8">
+                <div className="w-full max-w-2xl mx-auto">
+                  <Card className="bg-white/90 backdrop-blur-sm border border-primary/10 shadow-lg">
+                    <div className="p-6">
+                      <motion.div 
+                        className="flex items-center justify-center w-full gap-3 mb-6"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {unprocessedTransactions.length > 0 ? (
+                          <>
+                            <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                              Unrecorded Transactions
+                            </h3>
+                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                          </>
+                        ) : (
+                          <h3 className="text-xl font-semibold text-gray-600 flex items-center gap-2">
+                            All Caught Up! 
+                            <span role="img" aria-label="celebration">🎉</span>
+                          </h3>
+                        )}
+                      </motion.div>
+                      <div className="space-y-3">
+                        {unprocessedTransactions.map((transaction, index) => (
+                          <motion.button
+                            key={transaction._id}
+                            onClick={() => handleTransactionClick(transaction)}
+                            className="w-full flex items-center justify-between px-8 py-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:bg-accent/50 transition-all"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="p-2 bg-accent rounded-full">
+                                <Camera className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="text-left">
+                                <p className="font-medium text-gray-900">{transaction.merchant}</p>
+                                <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                            <p className="font-medium text-gray-900">${transaction.amount.toFixed(2)}</p>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
