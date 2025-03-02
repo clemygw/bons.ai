@@ -47,11 +47,11 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ padding: "40px 20px" }}>
           <div className="flex justify-center mb-8">
-            <div className="w-64 h-64 bg-gradient-to-br from-teal-500 to-red-500 rounded-full p-4 flex items-center justify-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-teal-500 to-red-500 rounded-full p-4 flex items-center justify-center">
               <img 
                 src="/leaf.svg" 
                 alt="Bons.ai Logo" 
-                className="w-[180px] h-[180px] text-white"
+                className="w-[88px] h-[88px] text-white"
               />
             </div>
           </div>
