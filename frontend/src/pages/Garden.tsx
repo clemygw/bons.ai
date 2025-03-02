@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Camera } from "../components/Icons"
 import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import DevSidebar from "../components/DevSidebar"
 import TopBar from "../components/TopBar"
 import Card from "../components/Card"
-import { useMemo } from "react";
 import CameraCapture from "../components/CameraCapture"
 
 interface Transaction {
@@ -19,15 +18,40 @@ interface Transaction {
   date: string
   category: string
   receiptUploaded: boolean
+  co2Emissions: number
 }
+
+// Average CO2 emissions (in kg) per dollar spent
+const CO2_PER_DOLLAR = 3.7  // Average US CO2 emissions per dollar spent
 
 export default function Garden() {
   const { company } = useCompany()
-  const { carbonSaved } = useGrowTree(100)
   const { user } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showCamera, setShowCamera] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+
+  // Calculate carbon saved based on spending vs actual emissions
+  const carbonSaved = useMemo(() => {
+    // Filter transactions for the last month
+    const now = new Date()
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+    const monthlyTransactions = transactions.filter(t => {
+      const transactionDate = new Date(t.date)
+      return transactionDate >= lastMonth && transactionDate <= now
+    })
+
+    return monthlyTransactions.reduce((totalSaved, transaction) => {
+      // Calculate expected emissions based on amount spent
+      const expectedEmissions = transaction.amount * CO2_PER_DOLLAR
+      
+      // Calculate how much carbon was saved (expected - actual)
+      const savedEmissions = expectedEmissions - transaction.co2Emissions
+
+      // Only count positive savings
+      return totalSaved + Math.max(0, savedEmissions)
+    }, 0)
+  }, [transactions])
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -115,14 +139,16 @@ export default function Garden() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-10 flex items-center justify-center">
+                  <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-12 flex items-center justify-center">
                     <div className="text-center">
-                      <span className="text-lg font-bold text-teal-600">
-                        {carbonSaved} kg CO₂
-                      </span>
-                      <span className="text-sm font-medium text-gray-600 ml-2">
-                        Carbon Saved
-                      </span>
+                      <div>
+                        <span className="text-lg font-bold text-teal-600">
+                          {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        (this month)
+                      </div>
                     </div>
                   </div>
                 </motion.div>
