@@ -15,14 +15,14 @@ export default function Layout() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50/50 via-sky-50/50 to-emerald-50/50">
       <div className="noise" />
       <DevSidebar />
-      <div className="flex-1 ml-16">
+      <div className="flex-1">
         <TopBar />
         <motion.main
           key={location.pathname}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="p-8 pt-24"
+          className="h-[calc(100vh-4rem)]"
         >
           <Outlet />
         </motion.main>

@@ -112,7 +112,7 @@ const Leaderboard = () => {
         <TopBar companyName={company?.name} />
         <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8 mt-16">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent ml-2">
                 {leaderboardData?.companyName} Leaderboard
               </h1>
