@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Bell, User, Settings, LogOut, Leaf } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { Link } from "react-router-dom"
 
 export default function TopBar({ children, companyName }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -44,12 +45,15 @@ export default function TopBar({ children, companyName }) {
       transition={{ duration: 0.3 }}
     >
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
-          <Leaf size={18} className="text-white" />
-        </div>
-        <h1 className="font-bold text-xl bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight">
-          Bons.ai
-        </h1>
+        <Link to="/garden" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-red-500 rounded-lg flex items-center justify-center shadow-sm">
+            <Leaf size={18} className="text-white" />
+          </div>
+
+          <h1 className="font-bold text-xl bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight">
+            Bons.ai
+          </h1>
+        </Link>
       </div>
       <div className="flex items-center gap-4">
         {children}
