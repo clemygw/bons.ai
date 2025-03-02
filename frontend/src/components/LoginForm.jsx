@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { EyeIcon, EyeOffIcon } from "./Icons"
 import axios from "axios"
+import { motion } from "framer-motion"
 
 async function getTransactions(accountId) {
   try{
@@ -91,8 +92,18 @@ const LoginForm = ({ onSubmit, isLoading }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
+    <motion.form 
+      onSubmit={handleSubmit} 
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email
         </label>
@@ -105,9 +116,13 @@ const LoginForm = ({ onSubmit, isLoading }) => {
           className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
           placeholder="Enter your email"
         />
-      </div>
+      </motion.div>
 
-      <div>
+      <motion.div
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
           Password
         </label>
@@ -121,17 +136,23 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
             placeholder="Enter your password"
           />
-          <button
+          <motion.button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-teal-600"
+            whileTap={{ scale: 0.9 }}
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex items-center justify-between">
+      <motion.div 
+        className="flex items-center justify-between"
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
         <div className="flex items-center">
           <input
             id="remember-me"
@@ -144,15 +165,25 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             Remember me
           </label>
         </div>
-        <a href="/forgot-password" className="text-sm font-medium text-teal-600 hover:text-emerald-600">
+        <motion.a 
+          href="/forgot-password" 
+          className="text-sm font-medium text-teal-600 hover:text-emerald-600"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           Forgot password?
-        </a>
-      </div>
+        </motion.a>
+      </motion.div>
 
-      <button
+      <motion.button
         type="submit"
         disabled={isLoading}
         className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
         {isLoading ? (
           <span className="flex items-center">
@@ -174,8 +205,8 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         ) : (
           "Sign in"
         )}
-      </button>
-    </form>
+      </motion.button>
+    </motion.form>
   )
 }
 

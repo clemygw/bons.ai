@@ -10,10 +10,19 @@ import { useState, useEffect } from "react"
 export default function Layout() {
   const location = useLocation()
   const [mounted, setMounted] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   
   // Ensure animations run after initial mount
   useEffect(() => {
     setMounted(true)
+    
+    // Add resize listener for responsive behavior
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
@@ -21,30 +30,30 @@ export default function Layout() {
       {/* Fixed background elements */}
       <div className="fixed inset-0 bg-gradient-to-br from-green-50/50 via-sky-50/50 to-emerald-50/50 -z-20" />
       
-      {/* Animated background orbs */}
+      {/* Animated background orbs - responsive positioning */}
       <motion.div 
-        className="fixed top-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-200/10 blur-3xl -z-10"
+        className="fixed top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] rounded-full bg-blue-200/10 blur-3xl -z-10"
         animate={{ 
-          x: [100, 120, 100],
-          y: [-100, -120, -100],
+          x: isMobile ? [50, 60, 50] : [100, 120, 100],
+          y: isMobile ? [-50, -60, -50] : [-100, -120, -100],
           transition: {
             repeat: Infinity,
             repeatType: "mirror",
-            duration: 15,
+            duration: isMobile ? 10 : 15,
             ease: "easeInOut"
           }
         }}
       />
       
       <motion.div 
-        className="fixed bottom-0 left-0 w-[600px] h-[600px] rounded-full bg-green-200/10 blur-3xl -z-10"
+        className="fixed bottom-0 left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full bg-green-200/10 blur-3xl -z-10"
         animate={{ 
-          x: [-100, -120, -100],
-          y: [100, 120, 100],
+          x: isMobile ? [-50, -60, -50] : [-100, -120, -100],
+          y: isMobile ? [50, 60, 50] : [100, 120, 100],
           transition: {
             repeat: Infinity,
             repeatType: "mirror",
-            duration: 18,
+            duration: isMobile ? 12 : 18,
             ease: "easeInOut",
             delay: 2
           }
@@ -58,8 +67,8 @@ export default function Layout() {
       <DevSidebar />
       <TopBar />
       
-      {/* Main content area */}
-      <div className="ml-16 pt-16">
+      {/* Main content area - adjusted for mobile */}
+      <div className={`${isMobile ? 'ml-0 pt-16' : 'ml-16 pt-16'}`}>
         {/* Super simple crossfade animation */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -70,7 +79,7 @@ export default function Layout() {
             transition={{ duration: 0.15 }}
             className="w-full"
           >
-            <div className="page-container">
+            <div className="page-container px-4 md:px-0">
               <Outlet />
             </div>
           </motion.div>
