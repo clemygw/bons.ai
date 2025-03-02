@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useCompany } from "../context/CompanyContext"
 import DevSidebar from "../components/DevSidebar"
 import TopBar from "../components/TopBar"
+import { LineChart,BarChart,Bar,Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const timeRangeLabels = {
   "1m": "1 month",
@@ -18,6 +19,7 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState("6m");
+  const [emissionsTrendData, setEmissionsTrendData] = useState([]);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -34,6 +36,10 @@ const Leaderboard = () => {
         }
         const data = await response.json();
         setLeaderboardData(data);
+        if (data.leaderboard) {
+          const trendData = calculateEmissionsTrend(data.leaderboard);
+          setEmissionsTrendData(trendData);
+        }
         console.log(data);
       } catch (err) {
         console.error('Error fetching leaderboard:', err);
@@ -45,6 +51,17 @@ const Leaderboard = () => {
 
     fetchLeaderboardData();
   }, [company, timeRange]);
+  const calculateEmissionsTrend = (leaderboard) => {
+    // Create an array of total emissions for each user
+    const trendData = leaderboard.map((user) => ({
+      name: `${user.firstName} ${user.lastName}`, // User's name
+      totalEmissions: user.totalEmissions, // Use total emissions directly
+    }));
+
+    return trendData;
+  };
+
+
 
   if (loading) {
     return (
@@ -138,6 +155,23 @@ const Leaderboard = () => {
                   {leaderboardData.companyStats.topPerformer}
                 </p>
               </div>
+            </div>
+            {/* Emissions Trend Graph */}
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Total Emissions Trend</h2>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  data={emissionsTrendData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="totalEmissions" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Leaderboard Table */}

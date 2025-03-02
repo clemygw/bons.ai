@@ -131,6 +131,7 @@ const companyController = {
 
       // Calculate emissions for each user based on spending
       const leaderboardData = company.users.map(user => {
+        const totalEmissions = user.transactions.reduce((sum, t) => sum + t.co2Emissions, 0);
         const totalSpending = user.transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
         const actualEmissions = user.transactions.reduce((sum, t) => sum + (t.co2Emissions || 0), 0);
         const expectedEmissions = totalSpending * CO2_PER_DOLLAR;
@@ -144,6 +145,7 @@ const companyController = {
           firstName: user.firstName,
           lastName: user.lastName,
           totalSpending,
+          totalEmissions,
           actualEmissions,
           emissionsReduced,
           percentageReduced
