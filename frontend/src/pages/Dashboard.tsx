@@ -426,13 +426,27 @@ export default function Dashboard() {
                           >
                             <div className="flex items-center gap-3">
                               <div className="text-left">
-                                <p className="font-medium">{transaction.merchant}</p>
+                                <div className="flex items-center">
+                                  <p className="font-medium">{transaction.merchant}</p>
+                                  <div 
+                                    className={`w-2 h-2 rounded-full ml-2 ${
+                                      (transaction.co2Emissions / transaction.amount) > 4
+                                        ? 'bg-red-500' 
+                                        : (transaction.co2Emissions / transaction.amount) >= 1 
+                                          ? 'bg-yellow-500' 
+                                          : 'bg-green-500'
+                                    }`}
+                                  ></div>
+                                </div>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
                                   {new Date(transaction.date).toLocaleDateString()}
                                 </p>
                               </div>
                             </div>
-                            <p className="font-medium">${transaction.amount.toFixed(2)}</p>
+                            <div className="flex items-center">
+                              <p className="text-gray-500 text-sm mr-2">{transaction.co2Emissions.toFixed(2)} kg</p>
+                              <p className="font-medium">${transaction.amount.toFixed(2)}</p>
+                            </div>
                           </button>
                         </motion.div>
                       ))
