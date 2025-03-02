@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import LoginForm from "../components/LoginForm"
@@ -11,12 +11,113 @@ import LoginForm from "../components/LoginForm"
 import authService from "../services/authService"
 import { motion } from "framer-motion"
 
+// Animated Leaf component
+const AnimatedLeaf = ({ index }) => {
+  // Generate random positions and movements
+  // Ensure leaves are distributed across the entire screen
+  const startX = Math.random() * 100; // random start position (percentage of viewport)
+  const startY = Math.random() * 100;
+  const size = Math.random() * 10 + 10; // random size between 10-20px
+  const duration = Math.random() * 15 + 20; // random duration between 20-35s
+  const delay = Math.random() * 5; // random delay for staggered start
+  
+  // Create more varied movement paths to ensure coverage of left side
+  const path = [
+    { x: `${startX}vw`, y: `${startY}vh`, rotate: 0 },
+    { x: `${startX + (Math.random() * 60 - 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX + (Math.random() * 60 - 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX + (Math.random() * 60 - 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX}vw`, y: `${startY}vh`, rotate: 0 }
+  ];
+
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      initial={{ x: `${startX}vw`, y: `${startY}vh`, opacity: 0 }}
+      animate={{
+        opacity: [0, 0.7, 0.7, 0],
+        x: path.map(p => p.x),
+        y: path.map(p => p.y),
+        rotate: path.map(p => p.rotate),
+      }}
+      transition={{
+        duration: duration,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      style={{ width: `${size}px`, height: `${size}px` }}
+    >
+      <img 
+        src="/leaf.svg" 
+        alt="Floating Leaf" 
+        className="w-full h-full"
+      />
+    </motion.div>
+  );
+};
+
+// Left-side specific leaf component to ensure coverage
+const LeftSideLeaf = ({ index }) => {
+  // Force starting position to be on the left side
+  const startX = Math.random() * 40; // 0-40% of viewport width (left side)
+  const startY = Math.random() * 100;
+  const size = Math.random() * 10 + 10;
+  const duration = Math.random() * 15 + 20;
+  const delay = Math.random() * 5;
+  
+  const path = [
+    { x: `${startX}vw`, y: `${startY}vh`, rotate: 0 },
+    { x: `${startX + (Math.random() * 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX + (Math.random() * 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX + (Math.random() * 30)}vw`, y: `${startY + (Math.random() * 60 - 30)}vh`, rotate: Math.random() * 360 },
+    { x: `${startX}vw`, y: `${startY}vh`, rotate: 0 }
+  ];
+
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      initial={{ x: `${startX}vw`, y: `${startY}vh`, opacity: 0 }}
+      animate={{
+        opacity: [0, 0.7, 0.7, 0],
+        x: path.map(p => p.x),
+        y: path.map(p => p.y),
+        rotate: path.map(p => p.rotate),
+      }}
+      transition={{
+        duration: duration,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      style={{ width: `${size}px`, height: `${size}px` }}
+    >
+      <img 
+        src="/leaf.svg" 
+        alt="Floating Leaf" 
+        className="w-full h-full"
+      />
+    </motion.div>
+  );
+};
+
 const Login = () => {
   const navigate = useNavigate()
   const { setUser } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [companyName, setCompanyName] = useState("")
+  const [leaves, setLeaves] = useState([])
+  const [leftLeaves, setLeftLeaves] = useState([])
+  
+  // Generate leaves on component mount
+  useEffect(() => {
+    // Create array of leaf indices
+    const leafCount = 40; // Regular leaves
+    const leftLeafCount = 20; // Additional left-side specific leaves
+    setLeaves(Array.from({ length: leafCount }, (_, i) => i));
+    setLeftLeaves(Array.from({ length: leftLeafCount }, (_, i) => i));
+  }, []);
 
   const handleLogin = async (credentials) => {
     setIsLoading(true)
@@ -44,9 +145,19 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#E9EDC9", padding: "4px" }}>
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ backgroundColor: "#E9EDC9", padding: "4px" }}>
+      {/* Animated floating leaves - distributed across screen */}
+      {leaves.map((leaf) => (
+        <AnimatedLeaf key={leaf} index={leaf} />
+      ))}
+      
+      {/* Additional left-side specific leaves */}
+      {leftLeaves.map((leaf) => (
+        <LeftSideLeaf key={`left-${leaf}`} index={leaf} />
+      ))}
+      
       <motion.div 
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
