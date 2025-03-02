@@ -122,40 +122,42 @@ const ARTree = () => {
       const marker = document.createElement('a-marker');
       marker.setAttribute('preset', 'hiro');
       
+      // Create a container entity for the entire tree to control orientation
+      const treeContainer = document.createElement('a-entity');
+      // Rotate the tree to be parallel with the Hiro marker
+      // The Hiro marker is typically viewed from above, so rotate tree to match
+      treeContainer.setAttribute('rotation', '-90 0 0');
+      
       // Create tree elements
       const trunk = document.createElement('a-cylinder');
-      trunk.setAttribute('position', '0 0.75 0');
+      trunk.setAttribute('position', '0 -1 0');
       trunk.setAttribute('radius', '0.25');
       trunk.setAttribute('height', '1.5');
       trunk.setAttribute('color', '#8B4513');
-      trunk.setAttribute('rotation', '0 0 0');
       
       const foliage1 = document.createElement('a-cone');
-      foliage1.setAttribute('position', '0 2.2 0');
+      foliage1.setAttribute('position', '0 0 0');
       foliage1.setAttribute('radius-bottom', '1.2');
       foliage1.setAttribute('radius-top', '0.2');
       foliage1.setAttribute('height', '1.8');
       foliage1.setAttribute('color', '#228B22');
-      foliage1.setAttribute('rotation', '0 0 0');
-
+      
       const foliage2 = document.createElement('a-cone');
-      foliage2.setAttribute('position', '0 3 0');
+      foliage2.setAttribute('position', '0 1 0');
       foliage2.setAttribute('radius-bottom', '1.0');
       foliage2.setAttribute('radius-top', '0.2');
       foliage2.setAttribute('height', '1.5');
       foliage2.setAttribute('color', '#32CD32');
-      foliage2.setAttribute('rotation', '0 0 0');
       
       const foliage3 = document.createElement('a-cone');
-      foliage3.setAttribute('position', '0 4 0');
+      foliage3.setAttribute('position', '0 2 0');
       foliage3.setAttribute('radius-bottom', '0.8');
       foliage3.setAttribute('radius-top', '0.1');
       foliage3.setAttribute('height', '1.2');
       foliage3.setAttribute('color', '#006400');
-      foliage3.setAttribute('rotation', '0 0 0');
       
       const ground = document.createElement('a-circle');
-      ground.setAttribute('position', '0 0 0');
+      ground.setAttribute('position', '0 -1.7 0');
       ground.setAttribute('rotation', '-90 0 0');
       ground.setAttribute('radius', '1.5');
       ground.setAttribute('color', '#654321');
@@ -175,12 +177,15 @@ const ARTree = () => {
         console.log('Marker lost!');
       });
       
-      // Assemble the tree
-      marker.appendChild(trunk);
-      marker.appendChild(foliage1);
-      marker.appendChild(foliage2);
-      marker.appendChild(foliage3);
-      marker.appendChild(ground);
+      // Assemble the tree inside the container
+      treeContainer.appendChild(trunk);
+      treeContainer.appendChild(foliage1);
+      treeContainer.appendChild(foliage2);
+      treeContainer.appendChild(foliage3);
+      treeContainer.appendChild(ground);
+      
+      // Add the tree container to the marker
+      marker.appendChild(treeContainer);
       
       // Assemble the scene
       scene.appendChild(marker);
