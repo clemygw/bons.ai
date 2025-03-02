@@ -274,6 +274,7 @@ export default function Garden() {
           >
             <motion.div
               className="bg-white rounded-2xl shadow-xl max-w-4xl w-full p-6"
+
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
