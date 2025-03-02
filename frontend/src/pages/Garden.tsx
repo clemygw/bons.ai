@@ -1,13 +1,12 @@
 "use client"
 
+import React from 'react'
 import { useState, useEffect, useMemo } from "react"
 import { Camera } from "../components/Icons"
 import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
 import { useAuth } from "../context/AuthContext"
 import { motion, AnimatePresence } from "framer-motion"
-import DevSidebar from "../components/DevSidebar"
-import TopBar from "../components/TopBar"
 import Card from "../components/Card"
 import CameraCapture from "../components/CameraCapture"
 
@@ -165,119 +164,113 @@ export default function Garden() {
 
   
   return (
-    <div className="flex">
-      <DevSidebar />
-      <div className="flex-1">
-        <TopBar companyName={company?.name} />
-        <div className="min-h-[calc(100vh-4rem)] bg-white p-8">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Carbon Garden
-              </h1>
-            </div>
+    <div className="min-h-[calc(100vh-4rem)] bg-white p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Carbon Garden
+          </h1>
+        </div>
 
-            {/* Main Garden Area */}
-            <div className="bg-gradient-to-b from-accent/50 via-accent/30 to-accent/50 rounded-xl shadow-sm overflow-hidden">
-              <div className="relative h-[800px] flex flex-col items-center py-12">
-                {/* Carbon Saved Bar - Top section */}
-                <motion.div
-                  className="w-[400px] mt-8 mb-16"
-                  initial={{ y: 50, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: animationDuration, delay: 0.2 }}
-                >
-                  <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-20 flex items-center justify-center">
-                    <div className="text-center">
-                      <div>
-                        <span className="text-lg font-bold text-primary">
-                          {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
-                          <br /> {/* New Line */}
-                        </span>
-                        <span className="text-md font-bold text-teal-600">
-                          {treeCount} Trees Saved!
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        (this month)
-                      </div>
-                    </div>
+        {/* Main Garden Area */}
+        <div className="bg-gradient-to-b from-accent/50 via-accent/30 to-accent/50 rounded-xl shadow-sm overflow-hidden">
+          <div className="relative h-[800px] flex flex-col items-center py-12">
+            {/* Carbon Saved Bar - Top section */}
+            <motion.div
+              className="w-[400px] mt-8 mb-16"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: animationDuration, delay: 0.2 }}
+            >
+              <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-full shadow-lg h-20 flex items-center justify-center">
+                <div className="text-center">
+                  <div>
+                    <span className="text-lg font-bold text-primary">
+                      {carbonSaved.toFixed(2)} kg CO<sub>2</sub> Reduced
+                      <br /> {/* New Line */}
+                    </span>
+                    <span className="text-md font-bold text-teal-600">
+                      {treeCount} Trees Saved!
+                    </span>
                   </div>
-                </motion.div>
-
-
-                {/* Render trees dynamically on top of the hill */}
-                <div className="relative w-full h-48">
-                  {treePositions.map((pos, index) => (
-                    <motion.div
-                      key={index}
-                      className="absolute flex flex-col items-center"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      style={{
-                        left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
-                        bottom: `${pos.y}px`, // Slight height variation
-                        // zIndex: treeCount - index,
-                      }}
-                    >
-                      {/* Trunk */}
-                      <div className="w-4 h-16 bg-amber-800 shadow-xl" style={{ zIndex: treeCount-index} }/>
-
-                      {/* Foliage Layers */}
-                      <div className="w-12 h-12 bg-green-800 rounded-full -mt-14 shadow-xl" style={{ zIndex: (2*treeCount)-index}}/>
-                      <div className="w-10 h-10 bg-green-700 rounded-full -mt-14 shadow-xl"style={{ zIndex: (3*treeCount)-index}} />
-                      <div className="w-8 h-8 bg-green-600 rounded-full -mt-14 shadow-xl" style={{ zIndex: (4*treeCount)-index}}/>
-                      <div className="w-6 h-6 bg-green-500 rounded-full -mt-12 shadow-xl" style={{ zIndex:(5*treeCount)-index}}/>
-                    </motion.div>
-                  ))}
-                </div>
-                {/* Hill/Ground */}
-                <motion.div
-                  className="w-full h-48 bg-primary rounded-t-full mb-16" 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  style={{ borderRadius: '100% 100% 0 0' }}
-                />
-                {/* Unrecorded Transactions - Bottom section */}
-                <div className="w-full max-w-2xl px-4 text-center">
-                  <Card className="bg-white/80 backdrop-blur-sm">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                      Unrecorded Transactions
-                    </h3>
-                    <div className="space-y-3">
-                      {unprocessedTransactions.map((transaction, index) => (
-                        <motion.button
-                          key={transaction._id}
-                          onClick={() => handleTransactionClick(transaction)}
-                          className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:bg-accent/50 transition-all"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-accent rounded-full">
-                              <Camera className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="text-left">
-                              <p className="font-medium text-gray-900">{transaction.merchant}</p>
-                              <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                          <p className="font-medium text-gray-900">${transaction.amount.toFixed(2)}</p>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </Card>
+                  <div className="text-xs text-gray-500">
+                    (this month)
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-          
+
+            {/* Render trees dynamically on top of the hill */}
+            <div className="relative w-full h-48">
+              {treePositions.map((pos, index) => (
+                <motion.div
+                  key={index}
+                  className="absolute flex flex-col items-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  style={{
+                    left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
+                    bottom: `${pos.y}px`, // Slight height variation
+                    // zIndex: treeCount - index,
+                  }}
+                >
+                  {/* Trunk */}
+                  <div className="w-4 h-16 bg-amber-800 shadow-xl" style={{ zIndex: treeCount-index} }/>
+
+                  {/* Foliage Layers */}
+                  <div className="w-12 h-12 bg-green-800 rounded-full -mt-14 shadow-xl" style={{ zIndex: (2*treeCount)-index}}/>
+                  <div className="w-10 h-10 bg-green-700 rounded-full -mt-14 shadow-xl"style={{ zIndex: (3*treeCount)-index}} />
+                  <div className="w-8 h-8 bg-green-600 rounded-full -mt-14 shadow-xl" style={{ zIndex: (4*treeCount)-index}}/>
+                  <div className="w-6 h-6 bg-green-500 rounded-full -mt-12 shadow-xl" style={{ zIndex:(5*treeCount)-index}}/>
+                </motion.div>
+              ))}
+            </div>
+            {/* Hill/Ground */}
+            <motion.div
+              className="w-full h-48 bg-primary rounded-t-full mb-16" 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              style={{ borderRadius: '100% 100% 0 0' }}
+            />
+            {/* Unrecorded Transactions - Bottom section */}
+            <div className="w-full max-w-2xl px-4 text-center">
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Unrecorded Transactions
+                </h3>
+                <div className="space-y-3">
+                  {unprocessedTransactions.map((transaction, index) => (
+                    <motion.button
+                      key={transaction._id}
+                      onClick={() => handleTransactionClick(transaction)}
+                      className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:bg-accent/50 transition-all"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-accent rounded-full">
+                          <Camera className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium text-gray-900">{transaction.merchant}</p>
+                          <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <p className="font-medium text-gray-900">${transaction.amount.toFixed(2)}</p>
+                    </motion.button>
+                  ))}
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
+
+      
       </div>
 
       {/* Camera Modal */}
