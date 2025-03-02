@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react'
 import { useState, useEffect } from "react"
 import { useCompany } from "../context/CompanyContext"
 import DevSidebar from "../components/DevSidebar"
@@ -157,14 +158,8 @@ const Leaderboard = () => {
 
   if (loading) {
     return (
-      <div className="flex">
-        <DevSidebar />
-        <div className="flex-1">
-          <TopBar companyName={company?.name} />
-          <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        </div>
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     )
   }
