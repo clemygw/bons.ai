@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import LoginForm from "../components/LoginForm"
 // import BonsaiLogo from "../assets/bonsai-logo"
-import bonsaiLogo from "../assets/bonsai_logo_no_red.png" // Import the new logo
+// import bonsaiLogo from "../assets/bonsai_logo_no_red.png" // Import the new logo
+// import { Leaf } from "lucide-react" // No longer needed
  
 import authService from "../services/authService"
 
@@ -46,8 +47,12 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ padding: "40px 20px" }}>
           <div className="flex justify-center mb-8">
-            <div className="w-64 h-64 bg-gradient-to-br from-teal-500/10 to-emerald-500/10 rounded-full p-4 flex items-center justify-center">
-              <img src={bonsaiLogo} alt="Bonsai.ai Logo" className="w-full h-full rounded-full" />
+            <div className="w-64 h-64 bg-gradient-to-br from-teal-500 to-red-500 rounded-full p-4 flex items-center justify-center">
+              <img 
+                src="/leaf.svg" 
+                alt="Bons.ai Logo" 
+                className="w-[180px] h-[180px] text-white"
+              />
             </div>
           </div>
           <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
