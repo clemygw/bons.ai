@@ -24,6 +24,7 @@ const Leaderboard = () => {
       if (!company?._id) return;
       
       try {
+        console.log("Fetching leaderboard data...");
         setLoading(true);
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/companies/${company._id}/leaderboard?timeRange=${timeRange}`

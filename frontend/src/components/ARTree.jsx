@@ -44,22 +44,14 @@ const ARTree = () => {
       }
     });
 
-    // 4. Remove A-Frame scene and all its elements
-    if (containerRef.current) {
-      containerRef.current.innerHTML = '';
-      console.log("Container cleared");
-    }
-    
-    // 5. Clean up A-Frame global resources if they exist
-    if (window.AFRAME) {
-      // Remove any scenes created by A-Frame
-      document.querySelectorAll('a-scene').forEach(scene => {
-        scene.parentNode.removeChild(scene);
-        console.log("A-Frame scene removed");
-      });
-    }
+    // 4. Remove only the A-Frame scene and its elements
+    const scenes = document.querySelectorAll('a-scene[data-app-scene="true"]');
+    scenes.forEach(scene => {
+      scene.parentNode.removeChild(scene);
+      console.log("A-Frame scene removed");
+    });
 
-    // 6. Force garbage collection of AR.js resources
+    // 5. Clean up A-Frame global resources if they exist
     if (window.ARjs && window.ARjs.Context) {
       // AR.js might have its own context to clean up
       try {
@@ -248,7 +240,7 @@ const ARTree = () => {
     // Handle navigation button press
     const handleBackButton = () => {
       cleanupResources();
-      navigate('/dashboard');
+      navigate('/garden');
     };
 
     // Event listener for Escape key
@@ -256,7 +248,7 @@ const ARTree = () => {
       if (event.key === 'Escape') {
         cleanupResources();
         console.log("Navigated via Escape key");
-        navigate('/dashboard');
+        navigate('/garden');
       }
     };
 

@@ -19,10 +19,12 @@ interface Transaction {
   date: string
   category: string
   co2Emissions: number
+  receiptUploaded?: boolean
 }
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [receiptedTransactions, setReceiptedTransactions] = useState<Transaction[]>([])
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const { user } = useAuth()
   const { company } = useCompany()
@@ -38,10 +40,27 @@ export default function Dashboard() {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           const data = await response.json()
+          
+          // Set all transactions
           setTransactions(data)
+          
+          // Filter transactions with receipts uploaded
+          const receipted = data.filter((t: Transaction) => t.receiptUploaded === true)
+          setReceiptedTransactions(receipted)
+          
+          // Log transaction details for debugging
+          console.log(`Total transactions: ${data.length}`)
+          console.log(`Transactions with receipts: ${receipted.length}`)
+          console.log('Receipted transactions:', receipted.map(t => ({
+            id: t._id,
+            merchant: t.merchant,
+            amount: t.amount,
+            date: new Date(t.date).toLocaleDateString()
+          })))
         } catch (error) {
           console.error("Error fetching transactions:", error)
           setTransactions([])
+          setReceiptedTransactions([])
         }
       }
     }
@@ -312,31 +331,39 @@ export default function Dashboard() {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="p-6">
-                  <h2 className="text-xl font-semibold mb-6 text-gray-900">Recent Transactions</h2>
+                  <h2 className="text-xl font-semibold mb-6 text-gray-900">
+                    Receipted Transactions ({receiptedTransactions.length})
+                  </h2>
                   <div className="space-y-4">
-                    {transactions.map((transaction, index) => (
-                      <motion.div
-                        key={transaction._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                      >
-                        <button
-                          onClick={() => handleTransactionClick(transaction._id)}
-                          className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all"
+                    {receiptedTransactions.length > 0 ? (
+                      receiptedTransactions.map((transaction, index) => (
+                        <motion.div
+                          key={transaction._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="text-left">
-                              <p className="font-medium">{transaction.merchant}</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {new Date(transaction.date).toLocaleDateString()}
-                              </p>
+                          <button
+                            onClick={() => handleTransactionClick(transaction._id)}
+                            className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-emerald-100"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="text-left">
+                                <p className="font-medium">{transaction.merchant}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {new Date(transaction.date).toLocaleDateString()}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          <p className="font-medium">${transaction.amount.toFixed(2)}</p>
-                        </button>
-                      </motion.div>
-                    ))}
+                            <p className="font-medium">${transaction.amount.toFixed(2)}</p>
+                          </button>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-center py-4">
+                        No transactions with receipts found.
+                      </p>
+                    )}
                   </div>
                 </Card>
               </motion.div>
