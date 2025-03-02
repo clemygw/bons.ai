@@ -274,9 +274,20 @@ export default function Dashboard() {
                                       >
                                         <div className="flex justify-between items-center">
                                           <div>
-                                            <p className="font-medium text-gray-900">
-                                              {transaction.merchant}
-                                            </p>
+                                            <div className="flex items-center">
+                                              <p className="font-medium text-gray-900">
+                                                {transaction.merchant}
+                                              </p>
+                                              <div 
+                                                className={`w-2 h-2 rounded-full ml-2 ${
+                                                  (transaction.co2Emissions / transaction.amount) > 4
+                                                    ? 'bg-red-500' 
+                                                    : (transaction.co2Emissions / transaction.amount) >= 1 
+                                                      ? 'bg-yellow-500' 
+                                                      : 'bg-green-500'
+                                                }`}
+                                              ></div>
+                                            </div>
                                             <p className="text-sm text-gray-500">
                                               {new Date(transaction.date).toLocaleDateString()}
                                             </p>
