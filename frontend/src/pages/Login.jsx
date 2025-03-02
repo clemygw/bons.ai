@@ -83,7 +83,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-teal-600 to-emerald-600 p-4">
+        <div className="bg-gradient-to-r from-teal-600 to-emerald-600 p-4 rounded-lg">
           <p className="text-center text-white text-xs">© {new Date().getFullYear()} bons.ai. All rights reserved.</p>
         </div>
       </div>
