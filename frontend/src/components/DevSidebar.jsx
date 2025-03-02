@@ -24,7 +24,9 @@ export default function DevSidebar() {
   const menuItems = [
     { icon: Home, label: "Garden", path: "/garden" },
     { icon: BarChart2, label: "Dashboard", path: "/dashboard" },
-    { icon: Users, label: "Leaderboard", path: "/leaderboard" }
+    { icon: Users, label: "Leaderboard", path: "/leaderboard" },
+    { icon: Camera, label: "AR Tree", path: "/ar" }
+    
   ]
 
   return (
