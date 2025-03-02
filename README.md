@@ -27,24 +27,16 @@ The MERN stack typically has two main directories: one for the frontend (React) 
 Backend Setup
 ```
 Navigate to the backend directory:
-bash
-Copy
 cd backend
 Install the backend dependencies:
-bash
-Copy
 npm install
 ```
 
 Frontend Setup
 ```
 Navigate to the frontend directory:
-bash
-Copy
 cd ../frontend
 Install the frontend dependencies:
-bash
-Copy
 npm install
 ```
 ## Step 3: Configure Environment Variables
