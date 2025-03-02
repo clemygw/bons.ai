@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Camera } from "../components/Icons"
 import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import DevSidebar from "../components/DevSidebar"
 import TopBar from "../components/TopBar"
 import Card from "../components/Card"
-import { useMemo } from "react";
 import CameraCapture from "../components/CameraCapture"
 
 interface Transaction {
@@ -23,7 +22,7 @@ interface Transaction {
 
 export default function Garden() {
   const { company } = useCompany()
-  const { carbonSaved } = useGrowTree(100)
+  const { carbonSaved } = useGrowTree(1000)
   const { user } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showCamera, setShowCamera] = useState(false)
@@ -68,29 +67,36 @@ export default function Garden() {
     setShowCamera(false)
     setSelectedTransaction(null)
   }
-  {/* Calculate number of trees based on carbonSaved */}
+
+  // Calculate number of trees based on carbonSaved
   const treeCount = Math.max(1, Math.floor(carbonSaved / 10))
   const treePositions = useMemo(() => {
     const positions = [];
   
     for (let i = 0; i < treeCount; i++) {
       let xPos;
+      let maxrange = 1200
   
       if (i === 0) {
         // Ensure the first tree is in the center
         xPos = 0;
       } else {
         // Generate random X positions within a reasonable range
-        xPos = (Math.random() - 0.5) * 1200; // Range: -150 to 150
+        xPos = (Math.random() - 0.5) * maxrange;
       }
-  
-      let yPos = -Math.abs(0.00028 * xPos * xPos);  // Slight vertical variation for realism
+
+      let miny = -150
+      let yPos = Math.random() *(-Math.abs(0.00026 * xPos * xPos)-miny) +miny;  // Slight vertical variation for realism
   
       positions.push({ x: xPos, y: yPos });
     }
   
     return positions;
   }, [treeCount]);
+
+  // Calculate animation duration based on the number of trees
+  const animationDuration = Math.min(0.5, 1/(treeCount /30+1)); // Adjust the divisor to control speed
+
   return (
     <div className="flex">
       <DevSidebar />
@@ -127,25 +133,27 @@ export default function Garden() {
                   </div>
                 </motion.div>
 
-
                 {/* Render trees dynamically on top of the hill */}
                 <div className="relative w-full h-48">
                   {treePositions.map((pos, index) => (
                     <motion.div
                       key={index}
                       className="absolute flex flex-col items-center"
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      transition={{ duration: animationDuration, delay: index * 0.1 }}
                       style={{
                         left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
                         bottom: `${pos.y}px`, // Slight height variation
+                        zIndex: treeCount + index // Ensure new trees are in front
                       }}
                     >
                       <div className="w-12 h-12 bg-green-500 rounded-full -mt-6 shadow-md" />
                       <div className="w-4 h-16 bg-amber-800" />
                     </motion.div>
-                  ))}</div>
+                  ))}
+                </div>
+
                 {/* Hill/Ground */}
                 <motion.div
                   className="w-full h-48 bg-emerald-500 rounded-t-full mb-16" 
@@ -154,6 +162,7 @@ export default function Garden() {
                   transition={{ duration: 0.5, ease: "easeOut" }}
                   style={{ borderRadius: '100% 100% 0 0' }}
                 />
+                
                 {/* Unrecorded Transactions - Bottom section */}
                 <div className="w-full max-w-2xl px-4">
                   <Card className="bg-white/80 backdrop-blur-sm">
@@ -187,8 +196,6 @@ export default function Garden() {
                 </div>
               </div>
             </div>
-
-          
           </div>
         </div>
       </div>
