@@ -10,6 +10,7 @@ import { CompanyProvider } from './context/CompanyContext'
 import { UserProvider } from "./context/UserContext"
 import './styles/index.css'
 import './styles/tailwind.css'
+import ARTree from './components/ARTree';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -58,6 +59,7 @@ function App() {
             />
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/upload-receipt" element={<CameraCapture />} />
+            <Route path="/ar" element={<ARTree/>}/>
           </Routes>
         </CompanyProvider>
       </UserProvider>
