@@ -142,6 +142,7 @@ export default function Garden() {
   
     for (let i = 0; i < treeCount; i++) {
       let xPos;
+      let maxrange = 1200
   
       if (i === 0) {
         // Ensure the first tree is in the center
@@ -150,14 +151,19 @@ export default function Garden() {
         // Generate random X positions within a reasonable range
         xPos = (Math.random() - 0.5) * 1200; // Range: -150 to 150
       }
-  
-      let yPos = -Math.abs(0.00028 * xPos * xPos);  // Slight vertical variation for realism
+      xPos = (Math.random() - 0.5) * maxrange;
+      let miny = -150
+      let yPos = Math.random() *(-Math.abs(0.00026 * xPos * xPos)-miny) +miny;  // Slight vertical variation for realism
   
       positions.push({ x: xPos, y: yPos });
     }
   
     return positions;
   }, [treeCount]);
+
+  const animationDuration = Math.min(0.5, 1/(treeCount /30+1)); // Adjust the divisor to control speed
+
+  
   return (
     <div className="flex">
       <DevSidebar />
