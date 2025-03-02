@@ -125,7 +125,7 @@ export default function Dashboard() {
                   <div className="mb-8 space-y-2">
                     <div className="flex justify-between text-sm font-medium">
                       <span>Total Emissions</span>
-                      <span>{totalEmissions} kg CO₂</span>
+                      <span>{totalEmissions.toFixed(2)} kg CO₂</span>
                     </div>
                     <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
@@ -150,7 +150,7 @@ export default function Dashboard() {
                         <div className="flex justify-between text-sm">
                           <span>{category.name}</span>
                           <span>
-                            {category.emissions} kg CO₂ ({category.percentage}%)
+                            {category.emissions.toFixed(2)} kg CO₂ ({category.percentage}%)
                           </span>
                         </div>
                         <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Amount</p>
-                    <p className="font-medium">${selectedTransaction?.amount}</p>
+                    <p className="font-medium">${selectedTransaction?.amount.toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Category</p>
@@ -228,7 +228,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Carbon Emissions</p>
-                    <p className="font-medium">{selectedTransaction?.co2Emissions} kg CO₂</p>
+                    <p className="font-medium">{selectedTransaction?.co2Emissions.toFixed(2)} kg CO₂</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Date</p>
