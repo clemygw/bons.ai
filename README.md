@@ -1,12 +1,14 @@
 ## Prerequisites
 
 ### Before proceeding, ensure you have the following installed on your system:
-
+```
 Node.js (v16 or higher recommended)
-npm (Node Package Manager) or Yarn
+npm (Node Package Manager)
 MongoDB (locally installed or a cloud-based MongoDB Atlas cluster)
 Git (optional, if cloning the repository)
-Instructions to Build
+```
+
+## Instructions to Build
 
 ## Step 1: Clone the Repository (Optional)
 
