@@ -14,6 +14,7 @@ const companyRoutes = require('./routes/company.route');
 const nessieRoutes = require('./routes/nessie.routes');
 const receiptRoutes = require('./routes/receipt.routes');
 const authRoutes = require('./routes/auth.routes');
+const insightsRoutes = require('./routes/insights.routes');
 const app = express();
 
 // Middleware
@@ -40,6 +41,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/receipts', receiptRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/insights', insightsRoutes);
 
 
 // Error handling middleware

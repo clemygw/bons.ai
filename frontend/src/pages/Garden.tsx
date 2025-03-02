@@ -1,14 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Camera } from "../components/Icons"
 import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
+import { useAuth } from "../context/AuthContext"
 import { motion, AnimatePresence } from "framer-motion"
 import DevSidebar from "../components/DevSidebar"
 import TopBar from "../components/TopBar"
 import Card from "../components/Card"
 import { useMemo } from "react";
+import CameraCapture from "../components/CameraCapture"
 
 interface Transaction {
   _id: string
@@ -16,50 +18,55 @@ interface Transaction {
   amount: number
   date: string
   category: string
+  receiptUploaded: boolean
 }
-
-const initialTransactions: Transaction[] = [
-  {
-    _id: "1",
-    merchant: "Whole Foods",
-    amount: 75.5,
-    date: "2024-02-20",
-    category: "grocery",
-  },
-  {
-    _id: "2",
-    merchant: "Uber",
-    amount: 25.0,
-    date: "2024-02-19",
-    category: "transportation",
-  },
-  {
-    _id: "3",
-    merchant: "Chipotle",
-    amount: 12.5,
-    date: "2024-02-18",
-    category: "dining",
-  },
-].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
 export default function Garden() {
   const { company } = useCompany()
   const { carbonSaved } = useGrowTree(100)
-  const [transactions, setTransactions] = useState(initialTransactions)
+  const { user } = useAuth()
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showCamera, setShowCamera] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (user?.id) {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions/user/${user.id}`)
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          const data = await response.json()
+          // Filter for transactions without receipts
+          const unprocessedTransactions = data.filter(
+            (t: Transaction) => !t.receiptUploaded
+          ).sort((a: Transaction, b: Transaction) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
+          setTransactions(unprocessedTransactions)
+        } catch (error) {
+          console.error("Error fetching transactions:", error)
+          setTransactions([])
+        }
+      }
+    }
+
+    fetchTransactions()
+  }, [user])
 
   const handleTransactionClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
     setShowCamera(true)
   }
 
-  const handleCloseCamera = () => {
-    setShowCamera(false)
-    if (selectedTransaction) {
+  const handleCloseCamera = async (uploaded: boolean = false) => {
+    // Only update transactions if explicitly uploaded
+    if (uploaded && selectedTransaction?._id) {
       setTransactions(transactions.filter((t) => t._id !== selectedTransaction._id))
-      setSelectedTransaction(null)
     }
+    setShowCamera(false)
+    setSelectedTransaction(null)
   }
   {/* Calculate number of trees based on carbonSaved */}
   const treeCount = Math.max(1, Math.floor(carbonSaved / 10))
@@ -194,10 +201,10 @@ export default function Garden() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={handleCloseCamera}
+            onClick={() => handleCloseCamera(false)}
           >
             <motion.div
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"
+              className="bg-white rounded-2xl shadow-xl max-w-4xl w-full p-6"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -207,24 +214,12 @@ export default function Garden() {
               <p className="text-gray-600 mb-4">
                 Please take a photo of your receipt for {selectedTransaction?.merchant}
               </p>
-              <div className="flex justify-end gap-3">
-                <motion.button
-                  onClick={handleCloseCamera}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-all"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Cancel
-                </motion.button>
-                <motion.button
-                  onClick={handleCloseCamera}
-                  className="px-4 py-2 bg-emerald-500 text-white rounded-xl shadow-sm"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Upload
-                </motion.button>
-              </div>
+              
+              <CameraCapture 
+                onUploadSuccess={() => handleCloseCamera(true)}
+                onCancel={() => handleCloseCamera(false)}
+                transactionId={selectedTransaction?._id}
+              />
             </motion.div>
           </motion.div>
         )}
