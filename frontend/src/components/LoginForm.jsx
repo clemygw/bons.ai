@@ -61,19 +61,14 @@ async function postTransactions(userId, transactions) {
 
 const LoginForm = ({ onSubmit, isLoading }) => {
   const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [company, setCompany] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // First, handle the login
-      const loginResponse = await onSubmit({ email, password, company, rememberMe });
-      
-      // Only proceed if login was successful and we have a user ID
+      const loginResponse = await onSubmit({ email, password, rememberMe });
       if (loginResponse && loginResponse.user && loginResponse.user.id) {
         // Get transactions from Nessie - using a fixed account ID for now
         // In production, you would use the user's actual account ID
@@ -88,11 +83,10 @@ const LoginForm = ({ onSubmit, isLoading }) => {
           // await User.findByIdAndUpdate(req.params.userId, { $push: { transactions: savedTransaction._id } });
         }
       } else {
-        console.log("Login failed horribly. loginResponse:", loginResponse.user);
+        console.log("Login failed. loginResponse:", loginResponse.user);
       }
     } catch (error) {
       console.error('Error during login process:', error);
-      // Handle error appropriately
     }
   }
 
@@ -108,7 +102,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
           placeholder="Enter your email"
         />
       </div>
@@ -124,31 +118,17 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
             placeholder="Enter your password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-teal-600"
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
           </button>
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-          Company Name (Optional)
-        </label>
-        <input
-          id="company"
-          type="text"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
-          placeholder="Enter your company name"
-        />
       </div>
 
       <div className="flex items-center justify-between">
@@ -164,7 +144,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             Remember me
           </label>
         </div>
-        <a href="/forgot-password" className="text-sm font-medium text-teal-600 hover:text-teal-800">
+        <a href="/forgot-password" className="text-sm font-medium text-teal-600 hover:text-emerald-600">
           Forgot password?
         </a>
       </div>
@@ -172,7 +152,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <span className="flex items-center">

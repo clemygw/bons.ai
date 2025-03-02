@@ -3,15 +3,15 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-import { useCompany } from '../context/CompanyContext'
 import LoginForm from "../components/LoginForm"
-import BonsaiLogo from "../assets/bonsai-logo"
+// import BonsaiLogo from "../assets/bonsai-logo"
+import bonsaiLogo from "../assets/bonsai_logo_no_red.png" // Import the new logo
+ 
 import authService from "../services/authService"
 
 const Login = () => {
   const navigate = useNavigate()
   const { setUser } = useAuth()
-  const { updateCompany } = useCompany()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [companyName, setCompanyName] = useState("")
@@ -22,56 +22,37 @@ const Login = () => {
       setIsLoading(true)
       setError("")
 
-      // Login user
-      const loginResponse = await authService.signin(credentials)
-      console.log('Fetching user by login response:', loginResponse.user);
-      
-      setUser(loginResponse.user)
+      // Call the auth service
+      const response = await authService.signin(credentials)
 
-      // If user has a company, fetch and store company data
-      if (loginResponse.user.company) {
-        console.log('Fetching company data from user...');
-        
-        const companyResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/companies/${loginResponse.user.company._id}`
-        )
-        const companyData = await companyResponse.json()
-        
-        console.log('Company Data Received:', companyData);
-        
-        updateCompany(companyData)
-      } else {
-        console.log('No company associated with user');
-      }
+      // Update global auth context
+      setUser(response.user)
 
       // Navigate to dashboard
       setTimeout(() => {
         navigate("/garden")
       }, 100)
-      return loginResponse
+      return response
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.")
-      console.error('Login error:', {
-        error: err,
-        message: err.message,
-        stack: err.stack
-      })
+      console.error("Login error:", err)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-4">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#E9EDC9", padding: "4px" }}>
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ padding: "40px 20px" }}>
           <div className="flex justify-center mb-8">
-            <div className="w-32 h-32 bg-teal-50 rounded-lg p-4 flex items-center justify-center">
-              <BonsaiLogo />
+            <div className="w-64 h-64 bg-gradient-to-br from-teal-500/10 to-emerald-500/10 rounded-full p-4 flex items-center justify-center">
+              <img src={bonsaiLogo} alt="Bonsai.ai Logo" className="w-full h-full rounded-full" />
             </div>
           </div>
-
-          <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">Welcome to bons.ai</h1>
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+            Welcome to bons.ai
+          </h1>
           <p className="text-center text-gray-600 mb-8">Sign in to your account to continue</p>
 
           {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
@@ -95,14 +76,14 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <a href="/signup" className="text-teal-600 hover:text-teal-800 font-medium">
+              <a href="/signup" className="text-teal-600 hover:text-emerald-600 font-medium transition-colors">
                 Sign up
               </a>
             </p>
           </div>
         </div>
 
-        <div className="bg-teal-600 p-4">
+        <div className="bg-gradient-to-r from-teal-600 to-emerald-600 p-4 rounded-lg">
           <p className="text-center text-white text-xs">© {new Date().getFullYear()} bons.ai. All rights reserved.</p>
         </div>
       </div>
