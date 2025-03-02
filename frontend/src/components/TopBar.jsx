@@ -44,7 +44,7 @@ export default function TopBar({ children, companyName }) {
       className="fixed top-0 right-0 left-0 h-16 bg-white border-b z-50 flex items-center justify-between px-8"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0 }}
     >
       <div className="flex items-center gap-2">
         <Link to="/garden" className="flex items-center gap-2">
