@@ -274,9 +274,20 @@ export default function Dashboard() {
                                       >
                                         <div className="flex justify-between items-center">
                                           <div>
-                                            <p className="font-medium text-gray-900">
-                                              {transaction.merchant}
-                                            </p>
+                                            <div className="flex items-center">
+                                              <p className="font-medium text-gray-900">
+                                                {transaction.merchant}
+                                              </p>
+                                              <div 
+                                                className={`w-2 h-2 rounded-full ml-2 ${
+                                                  (transaction.co2Emissions / transaction.amount) > 4
+                                                    ? 'bg-red-500' 
+                                                    : (transaction.co2Emissions / transaction.amount) >= 1 
+                                                      ? 'bg-yellow-500' 
+                                                      : 'bg-green-500'
+                                                }`}
+                                              ></div>
+                                            </div>
                                             <p className="text-sm text-gray-500">
                                               {new Date(transaction.date).toLocaleDateString()}
                                             </p>
@@ -357,10 +368,18 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </motion.div>
+              </div>
 
-                {/* Generate Spending Insights Button */}
+              {/* Transactions List (1/3) */}
+              <motion.div
+                className="col-span-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Generate Spending Insights Button - Moved here */}
                 <motion.button
-                  className="mt-6 bg-primary text-primary-foreground rounded-full px-4 py-2 flex items-center"
+                  className="w-full mb-4 bg-primary text-primary-foreground rounded-lg px-6 py-3 flex items-center justify-center h-14 font-medium"
                   whileHover={{ scale: 1.02, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)" }}
                   transition={{ type: "spring", stiffness: 300 }}
                   onClick={async () => {
@@ -398,15 +417,7 @@ export default function Dashboard() {
                   )}
                   Generate Spending Insights
                 </motion.button>
-              </div>
 
-              {/* Transactions List (1/3) */}
-              <motion.div
-                className="col-span-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold mb-6 text-gray-900">
                     Receipted Transactions ({receiptedTransactions.length})
@@ -502,7 +513,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
+                className="space-y-4 max-w-2xl w-full"
               >
                 <h2 className="text-xl font-semibold mb-4">Spending Insights</h2>
                 <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: insights?.insights || '' }} />
