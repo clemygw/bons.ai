@@ -1,9 +1,7 @@
 const Company = require('../models/company.model');
 const User = require('../models/User.model');
-
 // Constants for emissions calculations
-const US_AVERAGE_YEARLY_EMISSIONS = 16000; // kg CO2
-const US_AVERAGE_MONTHLY_EMISSIONS = US_AVERAGE_YEARLY_EMISSIONS / 12;
+const CO2_PER_DOLLAR = 3.7; // Average US CO2 emissions per dollar spent
 
 const companyController = {
   // Get all companies
@@ -122,8 +120,8 @@ const companyController = {
           select: 'firstName lastName transactions',
           populate: {
             path: 'transactions',
-            select: 'co2Emissions date',
-            match: { date: { $gte: startDate } } // Only get transactions after start date
+            select: 'co2Emissions amount date',
+            match: { date: { $gte: startDate } }
           }
         });
 
@@ -131,37 +129,24 @@ const companyController = {
         return res.status(404).json({ message: 'Company not found' });
       }
 
-      // Get baseline emissions for comparison
-      let baselineEmissions;
-      switch(timeRange) {
-        case '1m':
-          baselineEmissions = US_AVERAGE_MONTHLY_EMISSIONS;
-          break;
-        case '3m':
-          baselineEmissions = US_AVERAGE_MONTHLY_EMISSIONS * 3;
-          break;
-        case '6m':
-          baselineEmissions = US_AVERAGE_MONTHLY_EMISSIONS * 6;
-          break;
-        case '1y':
-          baselineEmissions = US_AVERAGE_YEARLY_EMISSIONS;
-          break;
-        default:
-          baselineEmissions = US_AVERAGE_MONTHLY_EMISSIONS * 6;
-      }
-
-      // Calculate emissions for each user
+      // Calculate emissions for each user based on spending
       const leaderboardData = company.users.map(user => {
-        const totalEmissions = user.transactions.reduce((sum, t) => sum + t.co2Emissions, 0);
-        const emissionsReduced = baselineEmissions - totalEmissions;
+        const totalSpending = user.transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+        const actualEmissions = user.transactions.reduce((sum, t) => sum + (t.co2Emissions || 0), 0);
+        const expectedEmissions = totalSpending * CO2_PER_DOLLAR;
+        const emissionsReduced = Math.max(0, expectedEmissions - actualEmissions);
+        const percentageReduced = expectedEmissions > 0 
+          ? ((emissionsReduced / expectedEmissions) * 100).toFixed(1)
+          : "0.0";
         
         return {
           userId: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
-          totalEmissions,
+          totalSpending,
+          actualEmissions,
           emissionsReduced,
-          percentageReduced: ((emissionsReduced / baselineEmissions) * 100).toFixed(1)
+          percentageReduced
         };
       });
 
@@ -176,18 +161,32 @@ const companyController = {
         rank: index + 1
       }));
 
+      // Calculate company-wide stats
+      const totalSpending = rankedLeaderboard.reduce((sum, user) => sum + user.totalSpending, 0);
+      const totalActualEmissions = rankedLeaderboard.reduce((sum, user) => sum + user.actualEmissions, 0);
+      const totalExpectedEmissions = totalSpending * CO2_PER_DOLLAR;
+      const totalEmissionsReduced = rankedLeaderboard.reduce((sum, user) => sum + user.emissionsReduced, 0);
+      
+      const averageSpending = totalSpending / company.users.length;
+      const averageActualEmissions = totalActualEmissions / company.users.length;
+      const averageExpectedEmissions = averageSpending * CO2_PER_DOLLAR;
+      const averageReductionPerUser = totalEmissionsReduced / company.users.length;
+
       res.json({
         companyName: company.name,
         timeRange,
         totalUsers: company.users.length,
         leaderboard: rankedLeaderboard,
         companyStats: {
-          totalEmissionsReduced: rankedLeaderboard.reduce((sum, user) => sum + user.emissionsReduced, 0),
-          averageReductionPerUser: rankedLeaderboard.reduce((sum, user) => sum + user.emissionsReduced, 0) / company.users.length,
+          totalSpending,
+          totalActualEmissions,
+          totalEmissionsReduced,
+          averageSpending,
+          averageActualEmissions,
+          averageReductionPerUser,
           topPerformer: rankedLeaderboard[0] ? 
             `${rankedLeaderboard[0].firstName} ${rankedLeaderboard[0].lastName}` : 
-            'No users yet',
-          baselineEmissions // Include this for reference
+            'No users yet'
         }
       });
 
