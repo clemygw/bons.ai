@@ -52,7 +52,7 @@ export default function TopBar({ children, companyName }) {
             <Leaf size={18} className="text-primary-foreground" />
           </div>
           <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
-            Bons.ai
+            bons.ai
           </h1>
         </Link>
       </div>

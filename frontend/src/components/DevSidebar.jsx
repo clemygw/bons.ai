@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Link, useLocation } from "react-router-dom"
-import { Home, BarChart2, Camera, LogOut, Users } from "lucide-react"
+import { Home, BarChart2, Camera, LogOut, Users, Menu } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
 
@@ -21,12 +21,60 @@ export default function DevSidebar() {
     }
   }
 
+  // Animation variants for the hamburger menu
+  const topBarVariants = {
+    closed: { width: "24px" },
+    open: { width: "16px" }
+  }
+
+  const middleBarVariants = {
+    closed: { width: "24px" },
+    open: { width: "20px" }
+  }
+
+  const bottomBarVariants = {
+    closed: { width: "24px" },
+    open: { width: "12px" }
+  }
+
+  // Staggered animation for menu items
+  const sidebarAnimation = {
+    open: {
+      transition: {
+        staggerChildren: 0.07,
+        delayChildren: 0.2
+      }
+    },
+    closed: {
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1
+      }
+    }
+  }
+
+  const menuItemAnimation = {
+    open: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        y: { stiffness: 1000, velocity: -100 }
+      }
+    },
+    closed: {
+      y: 50,
+      opacity: 0,
+      transition: {
+        y: { stiffness: 1000 }
+      }
+    }
+  }
+
   const menuItems = [
     { icon: Home, label: "Garden", path: "/garden" },
     { icon: BarChart2, label: "Dashboard", path: "/dashboard" },
     { icon: Users, label: "Leaderboard", path: "/leaderboard" },
     { icon: Camera, label: "AR Tree", path: "/ar" }
-    
   ]
 
   return (
@@ -36,11 +84,16 @@ export default function DevSidebar() {
       
       <motion.div 
         className="fixed left-0 top-0 bottom-0 bg-transparent flex flex-col items-start py-6 z-50"
+
         initial={{ width: "4rem" }}
         animate={{ width: isHovered ? "12rem" : "4rem" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        style={{
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)"
+        }}
       >
         <nav className="flex-1 flex flex-col items-start gap-2 w-full mt-14">
           {menuItems.map((item) => {
@@ -51,6 +104,7 @@ export default function DevSidebar() {
               <motion.div 
                 key={item.path} 
                 className="w-full px-2"
+                variants={menuItemAnimation}
                 whileHover={{ scale: 1.02 }} 
                 whileTap={{ scale: 0.98 }}
               >
@@ -60,25 +114,26 @@ export default function DevSidebar() {
                     w-full h-10 flex items-center gap-3 px-3 rounded-lg transition-all
                     ${
                       isActive
-                        ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm"
-                        : "text-gray-600 hover:bg-gray-50"
+                        ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md"
+                        : "text-gray-600 hover:bg-white hover:shadow-sm"
                     }
                   `}
                 >
                   <motion.div
                     whileHover="hover"
                     variants={pulseVariant}
+                    className={isActive ? "text-primary-foreground" : "text-primary"}
                   >
                     <Icon size={20} />
                   </motion.div>
                   <motion.span
-                    className="font-medium whitespace-nowrap"
+                    className="font-medium whitespace-nowrap overflow-hidden"
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ 
                       opacity: isHovered ? 1 : 0,
                       width: isHovered ? "auto" : 0
                     }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.2, delay: 0.1 }}
                   >
                     {item.label}
                   </motion.span>
@@ -86,11 +141,11 @@ export default function DevSidebar() {
               </motion.div>
             )
           })}
-        </nav>
+        </motion.nav>
 
         <motion.button
           onClick={logout}
-          className="w-full px-2 h-10 flex items-center gap-3 hover:bg-gray-50 transition-all rounded-lg mx-0"
+          className="w-full px-2 h-10 flex items-center gap-3 hover:bg-white hover:shadow-sm transition-all rounded-lg mx-0 overflow-hidden"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -99,16 +154,16 @@ export default function DevSidebar() {
               whileHover="hover"
               variants={pulseVariant}
             >
-              <LogOut size={20} className="text-gray-600" />
+              <LogOut size={20} className="text-rose-500" />
             </motion.div>
             <motion.span
-              className="font-medium whitespace-nowrap text-gray-600"
+              className="font-medium whitespace-nowrap text-rose-500 overflow-hidden"
               initial={{ opacity: 0, width: 0 }}
               animate={{ 
                 opacity: isHovered ? 1 : 0,
                 width: isHovered ? "auto" : 0
               }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, delay: 0.2 }}
             >
               Sign Out
             </motion.span>

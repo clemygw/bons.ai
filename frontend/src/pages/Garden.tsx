@@ -1,13 +1,12 @@
 "use client"
 
+import React from 'react'
 import { useState, useEffect, useMemo } from "react"
 import { Camera } from "../components/Icons"
 import useGrowTree from "../hooks/useGrowTree"
 import { useCompany } from "../context/CompanyContext"
 import { useAuth } from "../context/AuthContext"
 import { motion, AnimatePresence } from "framer-motion"
-import DevSidebar from "../components/DevSidebar"
-import TopBar from "../components/TopBar"
 import Card from "../components/Card"
 import CameraCapture from "../components/CameraCapture"
 
@@ -204,33 +203,75 @@ export default function Garden() {
                       </div>
                     </div>
                   </div>
+                  <div className="text-xs text-gray-500">
+                    (this month)
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+
+            {/* Render trees dynamically on top of the hill */}
+            <div className="relative w-full h-48">
+              {treePositions.map((pos, index) => (
+                <motion.div
+                  key={index}
+                  className="absolute flex flex-col items-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  style={{
+                    left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
+                    bottom: `${pos.y}px`, // Slight height variation
+                    // zIndex: treeCount - index,
+                  }}
+                >
+                  {/* Trunk */}
+                  <div className="w-4 h-16 bg-amber-800 shadow-xl" style={{ zIndex: treeCount-index} }/>
+
+                  {/* Foliage Layers */}
+                  <div className="w-12 h-12 bg-green-800 rounded-full -mt-14 shadow-xl" style={{ zIndex: (2*treeCount)-index}}/>
+                  <div className="w-10 h-10 bg-green-700 rounded-full -mt-14 shadow-xl"style={{ zIndex: (3*treeCount)-index}} />
+                  <div className="w-8 h-8 bg-green-600 rounded-full -mt-14 shadow-xl" style={{ zIndex: (4*treeCount)-index}}/>
+                  <div className="w-6 h-6 bg-green-500 rounded-full -mt-12 shadow-xl" style={{ zIndex:(5*treeCount)-index}}/>
                 </motion.div>
-
-
-                {/* Render trees dynamically on top of the hill */}
-                <div className="relative w-full h-48">
-                  {treePositions.map((pos, index) => (
-                    <motion.div
-                      key={index}
-                      className="absolute flex flex-col items-center"
+              ))}
+            </div>
+            {/* Hill/Ground */}
+            <motion.div
+              className="w-full h-48 bg-primary rounded-t-full mb-16" 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              style={{ borderRadius: '100% 100% 0 0' }}
+            />
+            {/* Unrecorded Transactions - Bottom section */}
+            <div className="w-full max-w-2xl px-4 text-center">
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Unrecorded Transactions
+                </h3>
+                <div className="space-y-3">
+                  {unprocessedTransactions.map((transaction, index) => (
+                    <motion.button
+                      key={transaction._id}
+                      onClick={() => handleTransactionClick(transaction)}
+                      className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:bg-accent/50 transition-all"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      style={{
-                        left: `calc(50% + ${pos.x}px)`, // Random positioning but centered
-                        bottom: `${pos.y}px`, // Slight height variation
-                        // zIndex: treeCount - index,
-                      }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
-                      {/* Trunk */}
-                      <div className="w-4 h-16 bg-amber-800 shadow-xl" style={{ zIndex: treeCount-index} }/>
-
-                      {/* Foliage Layers */}
-                      <div className="w-12 h-12 bg-green-800 rounded-full -mt-14 shadow-xl" style={{ zIndex: (2*treeCount)-index}}/>
-                      <div className="w-10 h-10 bg-green-700 rounded-full -mt-14 shadow-xl"style={{ zIndex: (3*treeCount)-index}} />
-                      <div className="w-8 h-8 bg-green-600 rounded-full -mt-14 shadow-xl" style={{ zIndex: (4*treeCount)-index}}/>
-                      <div className="w-6 h-6 bg-green-500 rounded-full -mt-12 shadow-xl" style={{ zIndex:(5*treeCount)-index}}/>
-                    </motion.div>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-accent rounded-full">
+                          <Camera className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium text-gray-900">{transaction.merchant}</p>
+                          <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <p className="font-medium text-gray-900">${transaction.amount.toFixed(2)}</p>
+                    </motion.button>
                   ))}
                 </div>
                 {/* Hill/Ground */}
@@ -319,6 +360,8 @@ export default function Garden() {
             </div>
           </div>
         </div>
+
+      
       </div>
 
       {/* Camera Modal */}
