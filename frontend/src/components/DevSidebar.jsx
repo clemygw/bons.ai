@@ -1,134 +1,131 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Trophy, Sprout, Settings, LogOut } from "lucide-react"
-import { useUser } from "../context/UserContext"
+import { motion } from "framer-motion"
+import { Link, useLocation } from "react-router-dom"
+import { Home, BarChart2, Camera, LogOut, Users } from "lucide-react"
+import { useAuth } from "../context/AuthContext"
+import { useState } from "react"
 
-const DevSidebar = () => {
-  const { logout } = useUser()
-  const navigate = useNavigate()
-  const [isCollapsed, setIsCollapsed] = useState(true)
-  const [isHovering, setIsHovering] = useState(false)
+export default function DevSidebar() {
+  const location = useLocation()
+  const { logout } = useAuth()
+  const [isHovered, setIsHovered] = useState(false)
 
-  useEffect(() => {
-    let timeout
-    if (isHovering) {
-      setIsCollapsed(false)
-    } else {
-      timeout = setTimeout(() => setIsCollapsed(true), 300)
+  const pulseVariant = {
+    hover: {
+      scale: [1, 1.2, 1],
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
     }
-    return () => clearTimeout(timeout)
-  }, [isHovering])
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
   }
 
+  const menuItems = [
+    { icon: Home, label: "Garden", path: "/garden" },
+    { icon: BarChart2, label: "Dashboard", path: "/dashboard" },
+    { icon: Users, label: "Leaderboard", path: "/leaderboard" },
+    { icon: Camera, label: "Upload Receipt", path: "/receipt-upload" },
+  ]
+
   return (
-    <div
-      className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out ${
-        isCollapsed ? "w-16" : "w-64"
-      } z-20`}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <div className="flex flex-col h-full">
-        <div className={`mb-8 p-4 ${isCollapsed ? "items-center" : ""}`}>
-          <h2
-            className={`text-lg font-semibold text-teal-600 whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            } transition-opacity duration-300`}
-            style={{ height: '24px' }}
-          >
-            Development Menu
-          </h2>
-          <p
-            className={`text-xs text-gray-500 ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            } transition-opacity duration-300`}
-            style={{ height: '16px' }}
-          >
-            Whats up gang
-          </p>
+    <>
+      {/* Spacer div to prevent content overlap */}
+      <div className="w-16 flex-shrink-0" />
+      
+      <motion.div 
+        className="fixed left-0 top-0 bottom-0 bg-white border-r border-gray-100 flex flex-col items-start py-6 shadow-sm"
+        initial={{ width: "4rem" }}
+        animate={{ width: isHovered ? "12rem" : "4rem" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="w-14 h-10 pl-3 flex items-center">
+          <div className="flex flex-col gap-1.5 items-center justify-center w-6">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-6 h-0.5 bg-gray-600 rounded-full"
+              />
+            ))}
+          </div>
         </div>
 
-        <nav className="space-y-2 flex-1 p-4">
-          <Link
-            to="/garden"
-            className="flex items-center w-full gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors cursor-pointer"
-          >
-            <Sprout size={20} className={`min-w-[20px] ${isCollapsed ? "opacity-0" : "opacity-100"} transition-opacity duration-300`} />
-            <span
-              className={`whitespace-nowrap ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
-              } transition-all duration-300`}
-            >
-              Garden
-            </span>
-          </Link>
+        <nav className="flex-1 flex flex-col items-start gap-2 w-full mt-8">
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path
+            const Icon = item.icon
 
-          <Link
-            to="/dashboard"
-            className="flex items-center w-full gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors cursor-pointer"
-          >
-            <LayoutDashboard size={20} className={`min-w-[20px] ${isCollapsed ? "opacity-0" : "opacity-100"} transition-opacity duration-300`} />
-            <span
-              className={`whitespace-nowrap ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
-              } transition-all duration-300`}
-            >
-              Dashboard
-            </span>
-          </Link>
-
-          <Link
-            to="/leaderboard"
-            className="flex items-center w-full gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors cursor-pointer"
-          >
-            <Trophy size={20} className={`min-w-[20px] ${isCollapsed ? "opacity-0" : "opacity-100"} transition-opacity duration-300`} />
-            <span
-              className={`whitespace-nowrap ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
-              } transition-all duration-300`}
-            >
-              Leaderboard
-            </span>
-          </Link>
-
-          <Link
-            to="/settings"
-            className="flex items-center w-full gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors cursor-pointer"
-          >
-            <Settings size={20} className={`min-w-[20px] ${isCollapsed ? "opacity-0" : "opacity-100"} transition-opacity duration-300`} />
-            <span
-              className={`whitespace-nowrap ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
-              } transition-all duration-300`}
-            >
-              Settings
-            </span>
-          </Link>
+            return (
+              <motion.div 
+                key={item.path} 
+                className="w-full px-2"
+                whileHover={{ scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }}
+              >
+                <Link
+                  to={item.path}
+                  className={`
+                    w-full h-10 flex items-center gap-3 px-3 rounded-lg transition-all
+                    ${
+                      isActive
+                        ? "bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-sm"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }
+                  `}
+                >
+                  <motion.div
+                    whileHover="hover"
+                    variants={pulseVariant}
+                  >
+                    <Icon size={20} />
+                  </motion.div>
+                  <motion.span
+                    className="font-medium whitespace-nowrap"
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ 
+                      opacity: isHovered ? 1 : 0,
+                      width: isHovered ? "auto" : 0
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.label}
+                  </motion.span>
+                </Link>
+              </motion.div>
+            )
+          })}
         </nav>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full gap-3 px-7 py-4 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+        <motion.button
+          onClick={logout}
+          className="w-full px-2 h-10 flex items-center gap-3 hover:bg-gray-50 transition-all rounded-lg mx-0"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <LogOut size={20} className={`min-w-[20px] ${isCollapsed ? "opacity-0" : "opacity-100"} transition-opacity duration-300`} />
-          <span
-            className={`whitespace-nowrap ${
-              isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
-            } transition-all duration-300`}
-          >
-            Logout
-          </span>
-        </button>
-      </div>
-    </div>
+          <div className="flex items-center gap-3 px-3">
+            <motion.div
+              whileHover="hover"
+              variants={pulseVariant}
+            >
+              <LogOut size={20} className="text-gray-600" />
+            </motion.div>
+            <motion.span
+              className="font-medium whitespace-nowrap text-gray-600"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ 
+                opacity: isHovered ? 1 : 0,
+                width: isHovered ? "auto" : 0
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              Sign Out
+            </motion.span>
+          </div>
+        </motion.button>
+      </motion.div>
+    </>
   )
 }
-
-export default DevSidebar
 

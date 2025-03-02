@@ -94,7 +94,7 @@ const Leaderboard = () => {
         <div className="min-h-[calc(100vh-4rem)] bg-gray-50 p-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 ml-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent ml-2">
                 {leaderboardData?.companyName} Leaderboard
               </h1>
               

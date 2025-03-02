@@ -1,82 +1,106 @@
-import { User, Bell } from "lucide-react"
+"use client"
+
+import { motion, AnimatePresence } from "framer-motion"
+import { Bell, User, Settings, LogOut, Leaf } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { useUser } from "../context/UserContext"
-import { useCompany } from "../context/CompanyContext"
 
-const TopBar = () => {
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef(null)
-  const { logout, user } = useUser()
-  const navigate = useNavigate()
-  const { company } = useCompany()
+export default function TopBar({ children, companyName }) {
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const profileMenuRef = useRef(null)
 
-  // Close dropdown when clicking outside
+  // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false)
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false)
       }
     }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
-  const handleLogout = () => {
-    console.log("Logging out...")
-    logout()
-    navigate('/login')
-    setShowDropdown(false)
+  const handleSignOut = () => {
+    // Add sign out logic here
+    console.log("Signing out...")
+    // Example: auth.signOut()
+    setShowProfileMenu(false)
   }
 
-  const handleSettings = () => {
-    navigate('/settings')
-    setShowDropdown(false)
+  const handleAccountSettings = () => {
+    // Add navigation to account settings
+    console.log("Opening account settings...")
+    // Example: router.push('/account/settings')
+    setShowProfileMenu(false)
   }
 
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-teal-600">bons.ai</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{"Company: " + company?.name || 'Loading...'}</span>
-          <span className="text-sm text-gray-600">Logged in as: {user?.firstName}</span>
-          <button className="p-2 text-gray-600 hover:text-teal-600 transition-colors">
-            <Bell size={20} />
-          </button>
-          <div className="relative" ref={dropdownRef}>
-            <button 
-              onClick={() => {
-                console.log("Toggling dropdown!")
-                setShowDropdown(!showDropdown)
-              }}
-              className="p-2 text-gray-600 hover:text-teal-600 transition-colors"
-            >
-              <User size={20} />
-            </button>
-            
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                <button
-                  onClick={handleSettings}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+    <motion.div 
+      className="fixed top-0 right-0 left-16 h-16 bg-white border-b z-50 flex items-center justify-between px-8"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
+          <Leaf size={18} className="text-white" />
+        </div>
+        <h1 className="font-bold text-xl bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight">
+          Bons.ai
+        </h1>
+      </div>
+      <div className="flex items-center gap-4">
+        {children}
+        <motion.button
+          className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-all"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Bell size={20} className="text-gray-600" />
+        </motion.button>
+        <div className="relative" ref={profileMenuRef}>
+          <motion.button
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-lg"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+          >
+            <User size={20} />
+          </motion.button>
+          
+          {/* Profile Dropdown Menu */}
+          <AnimatePresence>
+            {showProfileMenu && (
+              <motion.div 
+                className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <button 
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={handleAccountSettings}
                 >
-                  Account Settings
+                  <Settings size={16} />
+                  <span>Account Settings</span>
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                <div className="border-t border-gray-100 my-1"></div>
+                <button 
+                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={handleSignOut}
                 >
-                  Logout
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
                 </button>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </div>
-    </header>
-  );
-};
+    </motion.div>
+  )
+}
 
-export default TopBar; 
